@@ -1,0 +1,87 @@
+name: Make intro speaker-controlled
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/manual-intro-controls.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace automatic intro with keyboard-controlled intro
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          pattern = re.compile(r"function runAutomaticIntro\(\)\{.*?\}if\(\(!initialHash\|\|initialHash==='#1'\)&&idx===0\)runAutomaticIntro\(\);else introSequence\?\.remove\(\);", re.S)
+
+          replacement = r'''let introStep=0;
+function finishIntro(){
+  if(!introSequence)return;
+  introSequence.classList.add('exit');
+  setTimeout(()=>{
+    introSequence.remove();
+    document.querySelector('.controls')?.classList.remove('intro-hidden');
+    window.removeEventListener('keydown',handleIntroKey,true);
+  },320)
+}
+function setIntroStep(step){
+  introStep=Math.max(0,Math.min(2,step));
+  introState(['dream','processing','rejected'][introStep]);
+}
+function handleIntroKey(e){
+  if(!introSequence||!document.body.contains(introSequence))return;
+  const forward=['ArrowRight','PageDown',' ','Enter'];
+  const back=['ArrowLeft','PageUp'];
+  if(forward.includes(e.key)){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(introStep<2)setIntroStep(introStep+1);else finishIntro();
+  }else if(back.includes(e.key)){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(introStep>0)setIntroStep(introStep-1);
+  }
+}
+function runSpeakerIntro(){
+  if(!introSequence)return;
+  document.querySelector('.controls')?.classList.add('intro-hidden');
+  introSequence.classList.add('show');
+  setIntroStep(0);
+  window.addEventListener('keydown',handleIntroKey,true);
+}
+if((!initialHash||initialHash==='#1')&&idx===0)runSpeakerIntro();else introSequence?.remove();'''
+
+          new_s, n = pattern.subn(replacement, s, count=1)
+          if n != 1:
+              raise SystemExit(f'Expected automatic intro block not found; replacements={n}')
+
+          new_s = new_s.replace('aria-hidden="true">\n  <section class="intro-state intro-dream active"', 'aria-hidden="false">\n  <section class="intro-state intro-dream active"', 1)
+          p.write_text(new_s, encoding='utf-8')
+
+          Path('.github/workflows/manual-intro-controls.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit manual intro behavior
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Deja intro bajo control del speaker"
+          git push
