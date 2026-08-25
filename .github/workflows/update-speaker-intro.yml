@@ -1,0 +1,49 @@
+name: Update speaker intro
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-speaker-intro.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update speaker slide zero
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('speaker.html')
+          s = p.read_text(encoding='utf-8')
+
+          new_s0 = '''<article class="card" id="s0" data-title="Apertura: del sueño a una operación en riesgo"><aside class="side"><div class="num">00</div><div class="time">Apertura · ~35 s</div></aside><div><h2 class="title">Del sueño de la casa propia a una operación en riesgo</h2><div class="script"><p><b>[Tu sueño de la casa propia]</b> Pensemos en alguien que está comenzando uno de los proyectos más importantes de su vida: comprar una vivienda.</p><p><b>[Evaluando tu crédito]</b> Cotiza, entrega antecedentes y el banco comienza a evaluar si puede financiarla.</p><p><b>[Realizando trámites]</b> Reúne documentos, acredita ingresos, completa formularios y avanza en el proceso.</p><p><b>[Recibiendo ofertas]</b> Incluso empieza a recibir condiciones comerciales. Todo indica que la operación puede seguir.</p><p><b>[Antecedentes comerciales]</b> Pero aparece un antecedente comercial que bloquea la evaluación. Puede ser una deuda antigua, ya pagada, o información que todavía no está correctamente actualizada.</p><p><b>[CRÉDITO PAUSADO]</b> En ese momento el crédito se detiene. La persona debe descubrir dónde está el problema, demostrar que lo resolvió y conseguir que esa corrección llegue al banco.</p><p><b>[OPERACIÓN EN RIESGO]</b> Y mientras hace todo eso, el tiempo sigue corriendo. La condición comercial, la evaluación o incluso la oportunidad de comprar esa vivienda pueden perder vigencia.</p><p><b>Ese es el dolor que abre nuestro caso: no basta con corregir un dato; la corrección tiene que llegar a tiempo para mantener viva la operación hipotecaria.</b></p></div><div class="screenref"><b>En pantalla:</b> avanzar con teclado por las 7 micro-slides. Dejar una breve pausa en “CRÉDITO PAUSADO” y otra en “OPERACIÓN EN RIESGO” antes de entrar al pitch.</div></div></article>'''
+
+          pattern = re.compile(r'<article class="card" id="s0".*?</article>\s*(?=<article class="card" id="s1")', re.S)
+          s2, n = pattern.subn(new_s0 + '\n\n', s, count=1)
+          if n != 1:
+              raise SystemExit(f'No se encontró la sección s0; reemplazos={n}')
+
+          p.write_text(s2, encoding='utf-8')
+          Path('.github/workflows/update-speaker-intro.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit speaker update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Actualiza speaker para la nueva intro hipotecaria"
+          git push
