@@ -1,0 +1,50 @@
+name: Mejorar hero de impacto
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/impact-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ajustar hero inicial
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = '''body:`<div class="problem"><div><h1>La casa está lista.<br><span>El dato no.</span></h1><p>Carolina tiene una vivienda elegida, el pie y una evaluación hipotecaria viable. Pero en medio del proceso aparece una deuda que ya pagó y que todavía figura como vigente.</p><div class="thesis"><b>El problema:</b> mientras intenta corregir la información entre distintas instituciones, su operación hipotecaria sigue venciendo.</div></div><div><div class="problemFlow"><article class="pbox blue"><small>01 · OPORTUNIDAD</small><strong>Casa elegida</strong><p>La operación es viable y tiene condiciones comerciales vigentes.</p></article><div class="pa">→</div><article class="pbox bad"><small>02 · INCONSISTENCIA</small><strong>Dato incorrecto</strong><p>Una deuda pagada continúa apareciendo y bloquea la evaluación.</p></article><div class="pa">→</div><article class="pbox"><small>03 · CONSECUENCIA</small><strong>Crédito detenido</strong><p>La persona corrige el origen, pero no sabe si el cambio llegó al banco a tiempo.</p></article></div><div class="thesis" style="margin-top:12px;background:#F1F8FF;color:#365C79"><b style="color:#2F78B6">Quiebre crítico:</b> corregir el dato no garantiza que la corrección llegue al banco a tiempo para retomar la evaluación.</div></div></div>`'''
+
+          new = '''body:`<div class="problem impact"><div class="impactCopy"><h1>Una deuda ya pagada<br><span>puede seguir frenando</span><br>un crédito hipotecario.</h1><p class="impactLead">El dato se corrige. <b>La operación no espera.</b></p></div><div><div class="problemFlow impactFlow"><article class="pbox blue"><small>01 · YA PAGADA</small><strong>Deuda regularizada</strong><p>La persona ya resolvió el problema.</p></article><div class="pa">→</div><article class="pbox bad"><small>02 · AÚN VISIBLE</small><strong>Sigue apareciendo</strong><p>El dato todavía bloquea la evaluación.</p></article><div class="pa">→</div><article class="pbox"><small>03 · CONSECUENCIA</small><strong>Crédito detenido</strong><p>La operación hipotecaria deja de avanzar.</p></article></div><div class="impactBreak"><b>Quiebre crítico:</b> corregir el origen no garantiza que la actualización llegue al banco a tiempo para retomar la evaluación.</div></div></div>`'''
+
+          if old not in s:
+              raise SystemExit('No se encontró el hero anterior para reemplazar')
+          s = s.replace(old, new, 1)
+
+          extra = '''.problem.impact{grid-template-columns:1.04fr .96fr;gap:42px}.impactCopy h1{font-size:clamp(58px,6vw,98px);line-height:.88;letter-spacing:-.065em}.impactCopy h1 span{color:var(--blue)}.impactLead{font-size:clamp(20px,1.8vw,28px)!important;line-height:1.25!important;margin-top:28px!important;color:#5E7687!important}.impactLead b{color:var(--navy)}.impactFlow .pbox{min-height:245px;padding:25px 22px}.impactFlow .pbox strong{font-size:29px}.impactBreak{margin-top:14px;background:var(--light);border-radius:16px;padding:18px 20px;color:#355F7E;font-size:16px;line-height:1.35}.impactBreak b{color:#176EB4}@media(max-width:900px){.problem.impact{grid-template-columns:1fr}.impactCopy h1{font-size:48px}.impactFlow{grid-template-columns:1fr}.impactLead{font-size:18px!important}}'''
+          if '.problem.impact{' not in s:
+              s = s.replace('</style>', extra + '</style>', 1)
+
+          p.write_text(s, encoding='utf-8')
+          Path('.github/workflows/impact-hero.yml').unlink(missing_ok=True)
+          PY
+      - name: Guardar cambios
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m 'Refuerza hero de impacto inicial'
+          git push
