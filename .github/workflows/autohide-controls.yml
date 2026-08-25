@@ -1,0 +1,38 @@
+name: Auto-hide presentation controls
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/autohide-controls.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-controls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add 2-second auto-hide behavior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if '.controls.auto-hide' not in s:
+              s = s.replace('</style>', '.controls{transition:opacity .25s ease,transform .25s ease}.controls.auto-hide{opacity:0;pointer-events:none;transform:translate(-50%,12px)}</style>')
+          marker = 'const controlsAuto=document.querySelector(\'.controls\')'
+          if marker not in s:
+              js = "const controlsAuto=document.querySelector('.controls');let controlsHideTimer;function wakeControls(){if(!controlsAuto)return;controlsAuto.classList.remove('auto-hide');clearTimeout(controlsHideTimer);controlsHideTimer=setTimeout(()=>controlsAuto.classList.add('auto-hide'),2000)}['keydown','mousemove','mousedown','touchstart'].forEach(evt=>window.addEventListener(evt,wakeControls,{passive:true}));wakeControls();"
+              s = s.replace('</script></body></html>', js + '</script></body></html>')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Oculta controles tras 2 segundos de inactividad'
+          git push
