@@ -1,0 +1,104 @@
+name: Enrich intro icons and controls
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/enrich-intro-icons-controls.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add intro icons and controller support
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          css = r'''
+.intro-icon{width:92px;height:92px;border-radius:28px;display:grid;place-items:center;margin:0 auto 26px;border:1px solid transparent;box-shadow:0 14px 34px rgba(31,41,51,.08)}
+.intro-icon svg{width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.intro-dream .intro-icon{background:#EBF1FA;color:#3F8CD5;border-color:#CFE2F6}
+.intro-evaluation .intro-icon{background:#E8F3FD;color:#2D7FC5;border-color:#C7E0F4}
+.intro-paperwork .intro-icon{background:#F4F7FA;color:#526D7E;border-color:#D7E0E8}
+.intro-offers .intro-icon{background:#EAF8EE;color:#22A447;border-color:#CBECD4}
+.intro-problem .intro-icon{background:#FFF0DE;color:#C8791A;border-color:#F4D3A8}
+.intro-paused .intro-icon{background:#FFE6E6;color:#C33C3C;border-color:#F3C0C0}
+.intro-risk .intro-icon{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.28);box-shadow:none}
+@media(max-width:900px){.intro-icon{width:76px;height:76px;border-radius:23px;margin-bottom:22px}.intro-icon svg{width:40px;height:40px}}
+'''
+          if '.intro-icon{' not in s:
+              s = s.replace('</style>', css + '</style>')
+
+          icons = {
+            'dream': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 30 32 12l22 18"/><path d="M16 27v25h32V27"/><path d="M26 52V37h12v15"/></svg></div>''',
+            'evaluation': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="15" y="10" width="34" height="44" rx="5"/><path d="M23 20h18M23 29h12"/><circle cx="41" cy="41" r="7"/><path d="m46 46 6 6"/></svg></div>''',
+            'paperwork': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 20h18l5 6h21v27H10z"/><path d="M18 14h25v12"/><path d="M19 36h26M19 44h18"/></svg></div>''',
+            'offers': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M11 18v16l22 22 20-20-22-22H15a4 4 0 0 0-4 4Z"/><circle cx="22" cy="24" r="3"/><path d="m31 41 12-12"/><circle cx="32" cy="31" r="2.5"/><circle cx="42" cy="41" r="2.5"/></svg></div>''',
+            'problem': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 9 57 53H7Z"/><path d="M32 24v14"/><path d="M32 46h.01"/></svg></div>''',
+            'paused': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="M25 23v18M39 23v18"/></svg></div>''',
+            'risk': '''<div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="M32 18v15l10 6"/><path d="M14 11 8 17M50 11l6 6"/></svg></div>'''
+          }
+
+          for state, icon in icons.items():
+              # Avoid duplicates if workflow is retried.
+              sec = re.search(rf'(<section class="intro-state [^"]*" data-intro="{state}">)(.*?)(</section>)', s, re.S)
+              if not sec:
+                  raise SystemExit(f'Intro state not found: {state}')
+              block = sec.group(0)
+              if 'intro-icon' in block:
+                  continue
+              new_block = block.replace('<div class="intro-inner">', '<div class="intro-inner">' + icon, 1)
+              s = s[:sec.start()] + new_block + s[sec.end():]
+
+          # Controller stays visible during the intro.
+          s = s.replace('.controls.intro-hidden{opacity:0!important;pointer-events:none!important}',
+                        '.controls.intro-hidden{opacity:1!important;pointer-events:auto!important}')
+
+          # Controller arrows also navigate intro micro-slides.
+          old_prev = "document.getElementById('prev').onclick=()=>go(idx-1);"
+          new_prev = "document.getElementById('prev').onclick=()=>{if(introSequence&&document.body.contains(introSequence)){if(introStep>0)setIntroStep(introStep-1);return}go(idx-1)};"
+          old_next = "document.getElementById('next').onclick=()=>go(idx+1);"
+          new_next = "document.getElementById('next').onclick=()=>{if(introSequence&&document.body.contains(introSequence)){if(introStep<6)setIntroStep(introStep+1);else finishIntro();return}go(idx+1)};"
+          if old_prev in s:
+              s = s.replace(old_prev, new_prev, 1)
+          if old_next in s:
+              s = s.replace(old_next, new_next, 1)
+
+          # Same controller reflects progress through the 7 intro screens.
+          old_set = "function setIntroStep(step){introStep=Math.max(0,Math.min(6,step));introState(['dream','evaluation','paperwork','offers','problem','paused','risk'][introStep])}"
+          new_set = "function setIntroStep(step){introStep=Math.max(0,Math.min(6,step));introState(['dream','evaluation','paperwork','offers','problem','paused','risk'][introStep]);bar.style.width=((introStep+1)/7*100)+'%';count.textContent=`${introStep+1}/7`}"
+          if old_set in s:
+              s = s.replace(old_set, new_set, 1)
+
+          # On exit, restore normal slide progress immediately.
+          old_finish = "function finishIntro(){if(!introSequence)return;introSequence.classList.add('exit');setTimeout(()=>{introSequence.remove();document.querySelector('.controls')?.classList.remove('intro-hidden');window.removeEventListener('keydown',handleIntroKey,true)},320)}"
+          new_finish = "function finishIntro(){if(!introSequence)return;introSequence.classList.add('exit');setTimeout(()=>{introSequence.remove();document.querySelector('.controls')?.classList.remove('intro-hidden');window.removeEventListener('keydown',handleIntroKey,true);render()},320)}"
+          if old_finish in s:
+              s = s.replace(old_finish, new_finish, 1)
+
+          p.write_text(s, encoding='utf-8')
+          Path('.github/workflows/enrich-intro-icons-controls.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Agrega iconos y controlador a la intro"
+          git push
