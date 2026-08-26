@@ -484,6 +484,162 @@
       }
     }
 
+    /* Bank value slide: executive hierarchy and a clear economic conclusion */
+    .main:has(.valueCards) {
+      grid-template-rows: auto minmax(0, 1fr);
+      align-items: stretch;
+    }
+
+    .main:has(.valueCards) .title {
+      max-width: 1040px;
+      margin: 8px 0 20px;
+      font-size: clamp(44px, 4.25vw, 65px);
+      line-height: .94;
+      letter-spacing: -.058em;
+    }
+
+    .bank-value-title span {
+      color: var(--blue);
+    }
+
+    .bank-value-body {
+      align-self: stretch;
+      display: grid;
+      align-content: center;
+    }
+
+    .bank-value-body .valueCards {
+      counter-reset: bank-value;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .bank-value-body .valueCards article {
+      --card-accent: var(--blue);
+      position: relative;
+      min-height: 218px;
+      padding: 24px 23px 22px;
+      overflow: hidden;
+      border: 1px solid #cfe2f6 !important;
+      border-top: 4px solid var(--card-accent) !important;
+      border-radius: 20px;
+      background: linear-gradient(155deg, #fbfdff, #f1f8ff) !important;
+      box-shadow: 0 14px 30px #20384a0e;
+      counter-increment: bank-value;
+    }
+
+    .bank-value-body .valueCards article:nth-child(2) {
+      --card-accent: #2f9c58;
+      border-color: #cce8d4 !important;
+      background: linear-gradient(155deg, #fcfffd, #f0faf3) !important;
+    }
+
+    .bank-value-body .valueCards article:nth-child(3) {
+      --card-accent: #6477c9;
+      border-color: #d7dcf2 !important;
+      background: linear-gradient(155deg, #fdfdff, #f3f5fc) !important;
+    }
+
+    .bank-value-body .valueCards article::before {
+      content: "0" counter(bank-value);
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      color: var(--card-accent);
+      font-size: 11px;
+      font-weight: var(--fw-label);
+      letter-spacing: .08em;
+    }
+
+    .bank-value-body .valueCards article::after {
+      position: absolute;
+      top: 19px;
+      left: 22px;
+      width: 42px;
+      height: 42px;
+      border: 1px solid color-mix(in srgb, var(--card-accent) 28%, white);
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--card-accent) 9%, white);
+      color: var(--card-accent);
+      font-size: 22px;
+      font-weight: var(--fw-title);
+      box-shadow: 0 8px 18px #20384a0c;
+    }
+
+    .bank-value-body .valueCards article:nth-child(1)::after { content: "↓"; }
+    .bank-value-body .valueCards article:nth-child(2)::after { content: "↗"; }
+    .bank-value-body .valueCards article:nth-child(3)::after { content: "✓"; }
+
+    .bank-value-body .valueCards small {
+      display: block;
+      min-height: 42px;
+      padding: 5px 42px 0 54px;
+      color: var(--card-accent);
+      font-size: 8px;
+      line-height: 1.25;
+      letter-spacing: .07em;
+    }
+
+    .bank-value-body .valueCards b {
+      display: block;
+      margin: 26px 0 9px;
+      color: var(--navy);
+      font-size: clamp(18px, 1.65vw, 24px);
+      line-height: 1.05;
+      letter-spacing: -.035em;
+    }
+
+    .bank-value-body .valueCards p {
+      margin: 0;
+      color: #627a8b;
+      font-size: 11px;
+      line-height: 1.42;
+    }
+
+    .bank-value-body > .thesis {
+      position: relative;
+      margin-top: 17px !important;
+      padding: 21px 30px 21px 35px !important;
+      border-left: 6px solid #70b7eb;
+      border-radius: 19px !important;
+      background: linear-gradient(135deg, #1f2933, #263b4a) !important;
+      color: #fff;
+      font-size: clamp(19px, 1.8vw, 27px) !important;
+      line-height: 1.22;
+      text-align: left !important;
+      box-shadow: 0 16px 36px #17212a24;
+    }
+
+    .bank-value-body > .thesis b {
+      display: block;
+      margin-bottom: 5px;
+      color: #8cc4f5;
+      font-size: 13px;
+      font-weight: var(--fw-label);
+      letter-spacing: .015em;
+    }
+
+    .bank-value-body > .thesis + div {
+      width: max-content;
+      max-width: 100%;
+      margin: 10px auto 0 !important;
+      padding: 6px 12px;
+      border: 1px solid #e1e8ed;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #728896 !important;
+      font-size: 10px !important;
+      line-height: 1.25;
+    }
+
+    @media (max-width: 900px) {
+      .bank-value-body .valueCards {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Analogy slide: reference on the left, proposal clearly dominant */
     .main:has(.analogy) {
       grid-template-rows: auto minmax(0, 1fr);
@@ -2217,6 +2373,17 @@
       }
     }
 
+    function enhanceBankValueSlide() {
+      const heading = document.querySelector('.main .title');
+      if (!heading || heading.dataset.bankValueEnhanced) return;
+      if (heading.innerText.replace(/\s+/g, ' ').trim() !== '¿Por qué un banco pagaría por Ruta Segura?') return;
+
+      heading.dataset.bankValueEnhanced = 'true';
+      heading.classList.add('bank-value-title');
+      heading.innerHTML = '¿Por qué un banco pagaría<br><span>por Ruta Segura?</span>';
+      heading.closest('.main')?.querySelector('.valueCards')?.parentElement?.classList.add('bank-value-body');
+    }
+
     function enhancePrototypeChat() {
       const phone = document.querySelector('.phones .phone:first-child');
       if (!phone) return;
@@ -2228,6 +2395,8 @@
     prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
     const closingVisualObserver = new MutationObserver(enhanceClosingVisuals);
     closingVisualObserver.observe(document.documentElement, { childList: true, subtree: true });
+    const bankValueObserver = new MutationObserver(enhanceBankValueSlide);
+    bankValueObserver.observe(document.documentElement, { childList: true, subtree: true });
     const heroAppObserver = new MutationObserver(enhanceHeroApp);
     heroAppObserver.observe(document.documentElement, {
       childList: true,
