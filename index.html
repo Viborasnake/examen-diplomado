@@ -2092,6 +2092,47 @@
       }
     }
 
+    /* Directional connectors for the four-step flow */
+    .flow::before {
+      height: 1px;
+      background: #c9dceb;
+    }
+
+    .flow .node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -18px;
+      z-index: 5;
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border: 1px solid #cfe2f6;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 4px 12px rgba(31, 41, 51, 0.08);
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1;
+      transform: translateY(-50%);
+    }
+
+    @media (max-width: 900px) {
+      .flow::before {
+        display: none;
+      }
+
+      .flow .node:not(:last-child)::after {
+        top: auto;
+        right: 50%;
+        bottom: -18px;
+        content: "↓";
+        transform: translate(50%, 50%);
+      }
+    }
+
     .slide.slide-enter-forward {
       --slide-entry-x: 32px;
     }
