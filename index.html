@@ -43,6 +43,120 @@
 .focusInsight b{color:#9CCCF2}
 @media(max-width:900px){.focusSteps{grid-template-columns:1fr}.focusArrow{transform:rotate(90deg);min-height:34px}.focusStep{min-height:130px}}
 /* Visual refinement v1 */.slide{padding:38px 56px 32px}.top{align-items:center;min-height:34px}.kicker{font-size:10px;letter-spacing:.14em;color:#557286}.time{display:none!important}.stagebar{gap:6px;flex-wrap:nowrap}.stage{padding:6px 10px;border-radius:999px;background:#F4F7FA;color:#8AA0AE;font-size:8px;letter-spacing:.025em;border:1px solid transparent;transition:.2s ease}.stage.on{background:#EFF6FD;color:var(--blue);border-color:#D6E9F8;box-shadow:0 3px 10px #3F8CD510}.main{padding:8px 0 2px}.title{max-width:1080px;margin:14px 0 16px;text-wrap:balance}.footer{padding-top:9px;color:#91A3B0;border-color:#E8EEF3}.card,.column,.panel,.node,.role,.phase,.price,.pilotbox,.valueCards article,.storyPanel,.casebox{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.column.blue,.role.route,.casebox,.pilotbox,.sensitivity,.focusStep.final{box-shadow:0 14px 34px #20384A10}.callout,.formula,.question{box-shadow:0 8px 22px #20384A0A}.price{border-radius:16px}.phone{box-shadow:0 18px 42px #21384C18}.focusInsight{box-shadow:0 10px 28px #1F29331A}.controls{z-index:320!important;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px #17212A52!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.controls button{transition:transform .16s ease,filter .16s ease,background .16s ease}.controls button:hover{transform:translateY(-1px);filter:brightness(1.08)}.controls button:focus-visible{outline:2px solid #9CCCF2;outline-offset:2px}.controls.intro-hidden{opacity:1!important;pointer-events:auto!important;visibility:visible!important}.intro-sequence{z-index:200!important}.intro-inner{width:min(1040px,90vw)}.intro-icon{box-shadow:0 12px 32px #20384A12}.intro-title{text-wrap:balance}.intro-sub{max-width:760px}@media(max-width:980px){.slide{padding:32px 34px 28px}.stagebar{gap:3px}.stage{padding:5px 7px;font-size:7px}.controls{width:min(760px,calc(100% - 20px))}}.controls.intro-hidden.hidden{opacity:1!important;pointer-events:auto!important;visibility:visible!important}.controls.intro-hidden.auto-hide{opacity:1!important;pointer-events:auto!important;transform:translateX(-50%)!important}</style></head><body><div id="introSequence" class="intro-sequence" aria-hidden="false">
+  <style id="typographic-weight-system">
+    :root {
+      --fw-body: 400;
+      --fw-support: 500;
+      --fw-label: 700;
+      --fw-title: 800;
+    }
+
+    html,
+    body {
+      font-weight: var(--fw-body);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .title,
+    .hero-copy h1,
+    .problem h1,
+    .impactCopy h1,
+    .intro-title,
+    .ending,
+    .metric h2,
+    .storyPanel h2,
+    .casebox strong,
+    .money,
+    .logoIcon,
+    .logoWord,
+    .price span,
+    .pa,
+    .focusArrow {
+      font-weight: var(--fw-title);
+    }
+
+    strong,
+    b,
+    .focusStep strong,
+    .card strong,
+    .pbox strong,
+    .node b,
+    .lane b,
+    .micro b,
+    .jlabel b,
+    .phase b,
+    .delta b,
+    .role strong,
+    .valueCards b,
+    .price b,
+    .scope b,
+    .measure strong,
+    .event b,
+    .question,
+    .callout,
+    .formula,
+    .impactBreak.simple,
+    .focusInsight,
+    .r3,
+    .equals {
+      font-weight: var(--fw-label);
+    }
+
+    small,
+    .kicker,
+    .time,
+    .stage,
+    .brand,
+    .count,
+    .intro-kicker,
+    .intro-clock,
+    .intro-cover-label,
+    .intro-cover-names,
+    .phoneCap,
+    .screen .rs,
+    .btn,
+    .ok,
+    .tag,
+    .pbox small,
+    .casebox small,
+    .node small,
+    .micro small,
+    .jlabel small,
+    .delta small,
+    .role small,
+    .valueCards small,
+    .sensitivity small,
+    .metric small,
+    .focusStep small {
+      font-weight: var(--fw-label);
+    }
+
+    p,
+    .essence,
+    .goal,
+    .note,
+    .ticks,
+    .event span {
+      font-weight: var(--fw-body);
+    }
+
+    .intro-sub,
+    .intro-cover-program {
+      font-weight: var(--fw-support);
+    }
+
+    small[style*="font-weight:900"] {
+      font-weight: var(--fw-label) !important;
+    }
+  </style>
+  <script>
+    document.head.appendChild(document.getElementById('typographic-weight-system'));
+  </script>
   <section class="intro-state intro-dream active" data-intro="dream">
     <div class="intro-inner"><div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 30 32 12l22 18"/><path d="M16 27v25h32V27"/><path d="M26 52V37h12v15"/></svg></div>
       <div class="intro-kicker">Ruta Segura</div>
