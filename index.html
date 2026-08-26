@@ -473,40 +473,20 @@
   flex:0 0 auto;
   margin-left:auto;
 }
-.present-who,
-.presentation-timer{
+.present-who{
   position:static !important;
   top:auto !important;
   right:auto !important;
   transform:none !important;
   z-index:2 !important;
 }
-body.intro-open #presentWho,
-body.intro-open #presentTimer{
+body.intro-open #presentWho{
   position:fixed !important;
   top:18px !important;
   z-index:360 !important;
 }
-body.intro-open #presentWho{right:92px !important}
-body.intro-open #presentTimer{right:22px !important}
-.time-pulse{
-  position:fixed;inset:0;z-index:10000;pointer-events:none;
-  animation:timePulse .9s ease-out forwards;
-}
-.time-pulse.warn{--pulse:rgba(198,40,40,.18)}
-.time-pulse.urgent{--pulse:rgba(198,40,40,.26)}
-.time-pulse.end{--pulse:rgba(180,28,28,.32)}
-@keyframes timePulse{
-  0%{background:var(--pulse);box-shadow:inset 0 0 0 10px rgba(180,28,28,.45)}
-  40%{background:rgba(198,40,40,.08);box-shadow:inset 0 0 0 0 transparent}
-  100%{background:transparent;box-shadow:inset 0 0 0 0 transparent}
-}
-.presentation-timer.is-pulsing{
-  background:#C33C3C !important;
-  color:#fff !important;
-  border-color:#C33C3C !important;
-  box-shadow:0 0 0 6px rgba(195,60,60,.22) !important;
-}
+body.intro-open #presentWho{right:22px !important}
+#presentTimer{display:none !important}
 </style>
 </head><body><div id="introSequence" class="intro-sequence" aria-hidden="false">
   <style id="typographic-weight-system">
@@ -3251,26 +3231,6 @@ body.intro-open #presentTimer{right:22px !important}
     }
     .intro-risk .present-who,.intro-paused .present-who{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff}
 
-    .presentation-timer {
-      position: fixed;
-      top: 14px;
-      right: 20px;
-      z-index: 330;
-      padding: 4px 7px;
-      border: 1px solid rgba(215, 224, 232, 0.64);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.68);
-      box-shadow: 0 4px 14px rgba(31, 41, 51, 0.06);
-      color: #526d7e;
-      font-size: 9px;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: 0.04em;
-      font-variant-numeric: tabular-nums;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
     .controls {
       bottom: 12px;
       gap: 4px;
@@ -3325,11 +3285,6 @@ body.intro-open #presentTimer{right:22px !important}
     }
 
     @media (max-width: 700px) {
-      .presentation-timer {
-        top: 10px;
-        right: 12px;
-      }
-
       .controls .progress {
         width: 72px;
       }
@@ -4324,7 +4279,6 @@ body.intro-open #presentTimer{right:22px !important}
       function ensurePresenterChrome() {
         if (typeof idx === 'number' && idx >= 13) {
           document.getElementById('presentWho')?.setAttribute('hidden','');
-          document.getElementById('presentTimer')?.setAttribute('hidden','');
           return;
         }
         let who = document.getElementById('presentWho');
@@ -4334,20 +4288,12 @@ body.intro-open #presentTimer{right:22px !important}
           who.className = 'present-who';
           who.setAttribute('aria-label', 'Quien presenta');
         }
-        let timer = document.getElementById('presentTimer');
-        if (!timer) {
-          timer = document.createElement('div');
-          timer.id = 'presentTimer';
-          timer.className = 'presentation-timer';
-          timer.setAttribute('aria-label', 'Tiempo restante');
-        }
         const introOpen = document.getElementById('introSequence')?.classList.contains('show')
           && !document.getElementById('introSequence')?.classList.contains('is-done');
         if (introOpen) {
           document.body.classList.add('intro-open');
-          document.body.append(who, timer);
+          document.body.append(who);
           syncPresenter(0, true);
-          if (typeof drawPresentTimer === 'function') drawPresentTimer();
           return;
         }
         document.body.classList.remove('intro-open');
@@ -4359,9 +4305,8 @@ body.intro-open #presentTimer{right:22px !important}
           meta.className = 'top-meta';
           top.appendChild(meta);
         }
-        meta.append(who, timer);
+        meta.append(who);
         syncPresenter(logicalSlideNumber(), false);
-        if (typeof drawPresentTimer === 'function') drawPresentTimer();
       }
 
       render = function enhancedRender() {
@@ -4371,10 +4316,8 @@ body.intro-open #presentTimer{right:22px !important}
         el.classList.toggle('closing-sequence', idx >= 13);
         if (idx >= 13) {
           document.getElementById('presentWho')?.setAttribute('hidden','');
-          document.getElementById('presentTimer')?.setAttribute('hidden','');
         } else {
           document.getElementById('presentWho')?.removeAttribute('hidden');
-          document.getElementById('presentTimer')?.removeAttribute('hidden');
         }
         ensurePresenterChrome();
         prepareSlideReveals(revealAllOnRender);
@@ -4497,7 +4440,6 @@ function setIntroStep(step){
   bar.style.width=((introStep+1)/introOrder.length*100)+'%';
   count.textContent='0 · '+(introStep+1)+'/'+introOrder.length;
   syncPresenter(0,true);
-  if(introStep>0&&typeof startPresentationTimer==='function') startPresentationTimer();
 }
 function finishIntro(){
   if(!introSequence||introSequence.classList.contains('is-done'))return;
@@ -4510,7 +4452,6 @@ function finishIntro(){
   count.textContent='1/'+logicalSlideTotal
   bar.style.width=(1/logicalSlideTotal*100)+'%';
   syncPresenter(1,false);
-  if(typeof startPresentationTimer==='function') startPresentationTimer();
   const nextHash='#1';
   if(location.hash!==nextHash) location.hash=nextHash;
   setTimeout(()=>{
@@ -4527,8 +4468,7 @@ function reopenIntro(atEnd){
   introSequence.setAttribute('aria-hidden','false');
   document.body.classList.add('intro-open');
   const who=document.getElementById('presentWho');
-  const timer=document.getElementById('presentTimer');
-  if(who&&timer) document.body.append(who,timer);
+  if(who) document.body.append(who);
   setIntroStep(atEnd===false?0:introOrder.length-1);
 }
 function introNext(){
@@ -4568,12 +4508,11 @@ function runSpeakerIntro(){
   introSequence.classList.add('show');
   document.body.classList.add('intro-open');
   const who=document.getElementById('presentWho');
-  const timer=document.getElementById('presentTimer');
-  if(who&&timer) document.body.append(who,timer);
+  if(who) document.body.append(who);
   setIntroStep(0);
 }
 if((!initialHash||initialHash==='#1')&&idx===0)runSpeakerIntro();
-else if(introSequence){introSequence.classList.add('is-done');introSequence.setAttribute('aria-hidden','true');if(typeof startPresentationTimer==='function')startPresentationTimer()}
+else if(introSequence){introSequence.classList.add('is-done');introSequence.setAttribute('aria-hidden','true')}
 document.getElementById('prev').onclick=()=>navigate(-1);
 document.getElementById('next').onclick=()=>navigate(1);
-const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');const TIMER_SECONDS=900;let timerStartedAt=null;let lastPulseMark=null;function startPresentationTimer(){if(!timerStartedAt)timerStartedAt=Date.now()}function timerRemainingNow(){if(!timerStartedAt)return TIMER_SECONDS;return Math.max(0,TIMER_SECONDS-Math.floor((Date.now()-timerStartedAt)/1000))}function pulseScreen(kind){const flash=document.createElement('div');flash.className='time-pulse '+(kind||'warn');flash.setAttribute('aria-hidden','true');document.body.appendChild(flash);const badge=document.getElementById('presentTimer');if(badge){badge.classList.add('is-pulsing');setTimeout(()=>badge.classList.remove('is-pulsing'),1200)}setTimeout(()=>flash.remove(),1200)}const pulseFired={};function maybePulseTime(left){if(!timerStartedAt)return;[[450,'warn'],[300,'warn'],[150,'urgent'],[0,'end']].forEach(([mark,kind])=>{if(left<=mark&&!pulseFired[mark]){pulseFired[mark]=true;pulseScreen(kind)}})}function drawPresentTimer(){const node=document.getElementById('presentTimer');if(!node)return;const left=timerRemainingNow();const mm=String(Math.floor(left/60)).padStart(2,'0'),ss=String(left%60).padStart(2,'0');node.textContent=`${mm}:${ss}`;node.style.color=!timerStartedAt?'#526D7E':left<=150?'#C33C3C':left<=300?'#A66A00':'#526D7E';maybePulseTime(left)}if(!window.__rutaTimerStarted){window.__rutaTimerStarted=true;drawPresentTimer();setInterval(drawPresentTimer,250)}</script></body></html>
+const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');const TIMER_SECONDS=900;let timerStartedAt=null;function startPresentationTimer(){if(!timerStartedAt)timerStartedAt=Date.now()}function timerRemainingNow(){if(!timerStartedAt)return TIMER_SECONDS;return Math.max(0,TIMER_SECONDS-Math.floor((Date.now()-timerStartedAt)/1000))}function drawPresentTimer(){const node=document.getElementById('presentTimer');if(!node)return;const left=timerRemainingNow();const mm=String(Math.floor(left/60)).padStart(2,'0'),ss=String(left%60).padStart(2,'0');node.textContent=`${mm}:${ss}`;node.style.color=!timerStartedAt?'#526D7E':left<=150?'#C33C3C':left<=300?'#A66A00':'#526D7E'}if(!window.__rutaTimerStarted){window.__rutaTimerStarted=true;drawPresentTimer();setInterval(drawPresentTimer,250)}</script></body></html>
