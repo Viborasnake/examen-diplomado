@@ -80,12 +80,13 @@ body{padding-bottom:72px}.controller{left:auto;right:18px;bottom:18px;transform:
 <script>
 (() => {
   const control = document.getElementById('autoScroll');
-  const speed = 42;
+  const speed = 48;
+  const tickDelay = 100;
   const scroller = document.scrollingElement || document.documentElement;
   let playing = false;
-  let animationFrame = 0;
-  let lastFrame = 0;
-  let targetTop = 0;
+  let scrollTimer = 0;
+  let htmlScrollBehavior = '';
+  let bodyScrollBehavior = '';
 
   function currentTop() {
     return window.pageYOffset || scroller.scrollTop || document.body.scrollTop || 0;
@@ -110,37 +111,36 @@ body{padding-bottom:72px}.controller{left:auto;right:18px;bottom:18px;transform:
 
   function stop() {
     playing = false;
-    cancelAnimationFrame(animationFrame);
+    clearInterval(scrollTimer);
+    document.documentElement.style.scrollBehavior = htmlScrollBehavior;
+    document.body.style.scrollBehavior = bodyScrollBehavior;
     updateControl();
   }
 
-  function scrollStep(now) {
+  function scrollStep() {
     if (!playing) return;
     const maximum = maximumTop();
     if (maximum <= 0 || currentTop() >= maximum - 1) {
       stop();
       return;
     }
-    const elapsed = Math.min(80, now - lastFrame);
-    lastFrame = now;
-    const current = currentTop();
-    if (Math.abs(current - targetTop) > 4) targetTop = current;
-    targetTop = Math.min(maximum, targetTop + speed * elapsed / 1000);
-    moveTo(targetTop);
-    animationFrame = requestAnimationFrame(scrollStep);
+    const step = Math.max(1, Math.round(speed * tickDelay / 1000));
+    moveTo(Math.min(maximum, currentTop() + step));
   }
 
   function start() {
     const maximum = maximumTop();
-    targetTop = currentTop();
-    if (targetTop >= maximum - 1) {
-      targetTop = 0;
+    if (currentTop() >= maximum - 1) {
       moveTo(0);
     }
+    htmlScrollBehavior = document.documentElement.style.scrollBehavior;
+    bodyScrollBehavior = document.body.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
     playing = true;
-    lastFrame = performance.now();
     updateControl();
-    animationFrame = requestAnimationFrame(scrollStep);
+    scrollStep();
+    scrollTimer = window.setInterval(scrollStep, tickDelay);
   }
 
   control.addEventListener('click', () => playing ? stop() : start());
