@@ -669,11 +669,93 @@
       to { transform: translateY(-3px); opacity: 0.45; }
     }
 
+    /* Speaker-led slide motion */
+    #count {
+      min-width: 82px;
+    }
+
+    .slide.slide-enter-forward {
+      --slide-entry-x: 32px;
+    }
+
+    .slide.slide-enter-back {
+      --slide-entry-x: -32px;
+    }
+
+    .slide.slide-enter-forward .top,
+    .slide.slide-enter-forward .main,
+    .slide.slide-enter-forward .footer,
+    .slide.slide-enter-back .top,
+    .slide.slide-enter-back .main,
+    .slide.slide-enter-back .footer {
+      opacity: 0;
+      transform: translateX(var(--slide-entry-x));
+    }
+
+    .slide.slide-enter-forward.slide-entered .top,
+    .slide.slide-enter-forward.slide-entered .main,
+    .slide.slide-enter-forward.slide-entered .footer,
+    .slide.slide-enter-back.slide-entered .top,
+    .slide.slide-enter-back.slide-entered .main,
+    .slide.slide-enter-back.slide-entered .footer {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide.slide-enter-forward .top,
+    .slide.slide-enter-back .top {
+      transition: opacity .32s ease, transform .46s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .slide.slide-enter-forward .main,
+    .slide.slide-enter-back .main {
+      transition: opacity .4s .06s ease, transform .52s .06s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .slide.slide-enter-forward .footer,
+    .slide.slide-enter-back .footer {
+      transition: opacity .32s .12s ease, transform .46s .12s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(18px) scale(.985);
+      filter: blur(3px);
+      pointer-events: none;
+      transition:
+        opacity .42s ease,
+        transform .52s cubic-bezier(.2,.75,.25,1),
+        filter .38s ease,
+        box-shadow .22s ease;
+      will-change: opacity, transform;
+    }
+
+    .reveal-item.reveal-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      pointer-events: auto;
+    }
+
+    .reveal-item.reveal-just-entered {
+      animation: revealEmphasis .58s cubic-bezier(.2,.75,.25,1);
+    }
+
+    @keyframes revealEmphasis {
+      0% { box-shadow: 0 0 0 0 #3f8cd500; }
+      45% { box-shadow: 0 16px 36px #3f8cd51a; }
+      100% { box-shadow: inherit; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .chat-keyboard,
       .chat-composer,
       .chat-pending,
-      .chat-ai-thinking {
+      .chat-ai-thinking,
+      .slide .top,
+      .slide .main,
+      .slide .footer,
+      .reveal-item {
         animation: none !important;
         transition: none !important;
       }
@@ -762,11 +844,184 @@
     }
 
     function enhancePrototypeChat() {
-      startPrototypeChatAnimation(document.querySelector('.phones .phone:first-child'));
+      const phone = document.querySelector('.phones .phone:first-child');
+      if (!phone) return;
+      if (phone.classList.contains('reveal-item') && !phone.classList.contains('reveal-visible')) return;
+      startPrototypeChatAnimation(phone);
     }
 
     const prototypeChatObserver = new MutationObserver(enhancePrototypeChat);
     prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const revealPlans = [
+        ['.hero-copy', '.logoCard', '.essence'],
+        [
+          '.focusSteps > :nth-child(1)',
+          '.focusSteps > :nth-child(2), .focusSteps > :nth-child(3)',
+          '.focusSteps > :nth-child(4), .focusSteps > :nth-child(5)',
+          '.focusInsight'
+        ],
+        ['.column:first-child', '.column.blue', '.question'],
+        ['.storyPanel', '.casebox'],
+        ['.column:first-child', '.column.blue', '.question'],
+        [
+          '.flow .node:nth-child(1)',
+          '.flow .node:nth-child(2)',
+          '.flow .node:nth-child(3)',
+          '.flow .node:nth-child(4)',
+          '.callout'
+        ],
+        ['.analogy > .panel:first-child', '.equals, .analogy > .panel:last-child'],
+        ['.phones .phone:nth-child(1)', '.phones .phone:nth-child(2)', '.phones .phone:nth-child(3)'],
+        ['.journeys .jrow:first-child', '.journeys .jrow.good', '.journeys .delta'],
+        [
+          '.pilot > .pilotbox',
+          '.pricing .price:nth-child(1)',
+          '.pricing .price:nth-child(2)',
+          '.pricing .price:nth-child(3)'
+        ],
+        [
+          '.sensitivity',
+          '.kpiPricing .price:nth-child(1)',
+          '.kpiPricing .price:nth-child(2)',
+          '.kpiPricing .price:nth-child(3)'
+        ],
+        [
+          '.valueCards article:nth-child(1)',
+          '.valueCards article:nth-child(2)',
+          '.valueCards article:nth-child(3)',
+          '.valueCards + .thesis',
+          '.thesis + div'
+        ],
+        [
+          '.pilot > .pricing .price:nth-child(1)',
+          '.pilot > .pricing .price:nth-child(2)',
+          '.pilot > .pricing .price:nth-child(3)',
+          '.pilot > .pilotbox'
+        ],
+        [
+          '.main > div > :nth-child(1)',
+          '.main > div > :nth-child(2)',
+          '.main > div > :nth-child(3)'
+        ],
+        [
+          '.main > div > :nth-child(1)',
+          '.main > div > :nth-child(2)',
+          '.main > div > :nth-child(3)'
+        ],
+        [
+          '.main > div > :nth-child(1)',
+          '.main > div > :nth-child(2)',
+          '.main > div > :nth-child(3)'
+        ],
+        [
+          '.main > div > :nth-child(1)',
+          '.main > div > :nth-child(2)',
+          '.main > div > :nth-child(3)'
+        ],
+        ['.main > div > h1', '.storyPanel', '.casebox', '.callout']
+      ];
+
+      let revealGroups = [];
+      let revealStep = 0;
+      let lastRenderedIndex = idx;
+      let revealAllOnRender = false;
+      let entryCleanupTimer;
+      const originalRender = render;
+
+      function updateSpeakerCount() {
+        if (introSequence && document.body.contains(introSequence)) return;
+        const logical = logicalSlideNumber();
+        count.textContent = revealGroups.length > 1
+          ? `${logical}/${logicalSlideTotal} · ${revealStep}/${revealGroups.length}`
+          : `${logical}/${logicalSlideTotal}`;
+      }
+
+      function revealGroup(groupIndex, emphasize = true) {
+        const group = revealGroups[groupIndex];
+        if (!group) return false;
+        group.forEach(element => {
+          element.classList.add('reveal-visible');
+          if (emphasize) {
+            element.classList.remove('reveal-just-entered');
+            requestAnimationFrame(() => element.classList.add('reveal-just-entered'));
+            setTimeout(() => element.classList.remove('reveal-just-entered'), 620);
+          }
+        });
+        revealStep = Math.max(revealStep, groupIndex + 1);
+        updateSpeakerCount();
+        enhancePrototypeChat();
+        return true;
+      }
+
+      function concealGroup(groupIndex) {
+        const group = revealGroups[groupIndex];
+        if (!group) return false;
+        group.forEach(element => element.classList.remove('reveal-visible', 'reveal-just-entered'));
+        revealStep = Math.max(0, groupIndex);
+        updateSpeakerCount();
+        return true;
+      }
+
+      function prepareSlideReveals(showAll = false) {
+        const plan = revealPlans[idx] || [];
+        revealGroups = plan.map(selector => [...el.querySelectorAll(selector)]).filter(group => group.length);
+        revealStep = 0;
+        revealGroups.flat().forEach(element => element.classList.add('reveal-item'));
+
+        if (showAll) {
+          revealGroups.forEach((group, groupIndex) => revealGroup(groupIndex, false));
+          return;
+        }
+
+        updateSpeakerCount();
+        if (revealGroups.length) setTimeout(() => revealGroup(0, false), 210);
+      }
+
+      function playSlideEntry(direction) {
+        clearTimeout(entryCleanupTimer);
+        el.classList.remove('slide-enter-forward', 'slide-enter-back', 'slide-entered');
+        el.classList.add(direction < 0 ? 'slide-enter-back' : 'slide-enter-forward');
+        requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('slide-entered')));
+        entryCleanupTimer = setTimeout(() => {
+          el.classList.remove('slide-enter-forward', 'slide-enter-back', 'slide-entered');
+        }, 720);
+      }
+
+      render = function enhancedRender() {
+        const direction = idx < lastRenderedIndex ? -1 : 1;
+        originalRender();
+        prepareSlideReveals(revealAllOnRender);
+        playSlideEntry(direction);
+        revealAllOnRender = false;
+        lastRenderedIndex = idx;
+      };
+
+      go = function enhancedGo(n) {
+        const target = Math.max(0, Math.min(slides.length - 1, n));
+
+        if (target > idx && revealStep < revealGroups.length) {
+          revealGroup(revealStep);
+          return;
+        }
+
+        if (target < idx && revealStep > 1) {
+          concealGroup(revealStep - 1);
+          return;
+        }
+
+        if (target === idx) return;
+        revealAllOnRender = target < idx;
+        idx = target;
+        render();
+      };
+
+      if (!(introSequence && document.body.contains(introSequence))) {
+        prepareSlideReveals(false);
+        playSlideEntry(1);
+      }
+    });
   </script>
   <section class="intro-state intro-dream active" data-intro="dream">
     <div class="intro-inner"><div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 30 32 12l22 18"/><path d="M16 27v25h32V27"/><path d="M26 52V37h12v15"/></svg></div>
