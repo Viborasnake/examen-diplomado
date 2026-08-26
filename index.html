@@ -484,6 +484,392 @@
       }
     }
 
+    /* Opening slide: animated app inside a real phone frame */
+    .hero .logoCard.app-phone-stage {
+      position: relative;
+      min-height: clamp(410px, 60vh, 548px);
+      padding: 20px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 38%, #ffffff 0 25%, transparent 58%),
+        linear-gradient(145deg, #f6fafe, #eaf2f9);
+      border-color: #cfdde8;
+    }
+
+    .app-phone-stage::before {
+      content: "APP MÓVIL · CASO EN CURSO";
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      color: #658093;
+      font-size: 8px;
+      font-weight: var(--fw-label);
+      letter-spacing: .12em;
+    }
+
+    .hero-phone-shell {
+      position: relative;
+      height: clamp(375px, 53vh, 485px);
+      aspect-ratio: 9 / 18.4;
+      padding: 7px;
+      border: 3px solid #263641;
+      border-radius: 38px;
+      background: #dce5eb;
+      box-shadow: 0 25px 58px #20384a2b, inset 0 0 0 1px #ffffffb8;
+      transform: translateY(16px) scale(.975);
+      opacity: 0;
+      transition: opacity .45s ease, transform .62s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .app-demo-live .hero-phone-shell {
+      opacity: 1;
+      transform: translateY(8px) scale(1);
+    }
+
+    .hero-phone-shell::before,
+    .hero-phone-shell::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 5px;
+      border-radius: 4px;
+      background: #263641;
+    }
+
+    .hero-phone-shell::before {
+      left: -7px;
+      top: 82px;
+      height: 42px;
+      box-shadow: 0 56px 0 #263641;
+    }
+
+    .hero-phone-shell::after {
+      right: -7px;
+      top: 110px;
+      height: 68px;
+    }
+
+    .hero-app-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 29px;
+      background: #fff;
+      color: #294355;
+    }
+
+    .hero-app-screen::before {
+      content: "";
+      position: absolute;
+      z-index: 20;
+      top: 8px;
+      left: 50%;
+      width: 78px;
+      height: 20px;
+      border-radius: 20px;
+      background: #1b2630;
+      transform: translateX(-50%);
+    }
+
+    .hero-app-screen::after {
+      content: "";
+      position: absolute;
+      z-index: 20;
+      bottom: 6px;
+      left: 50%;
+      width: 68px;
+      height: 4px;
+      border-radius: 999px;
+      background: #1b2630;
+      transform: translateX(-50%);
+    }
+
+    .hero-app-splash,
+    .hero-app-home {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero-app-splash {
+      z-index: 4;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      background: linear-gradient(160deg, #f8fbfe, #eef6fd);
+      text-align: center;
+    }
+
+    .hero-app-splash .app-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: #fff;
+      font-size: 32px;
+      font-weight: var(--fw-title);
+      box-shadow: 0 12px 24px #3f8cd538;
+    }
+
+    .hero-app-splash strong {
+      margin-top: 14px;
+      font-size: 21px;
+      letter-spacing: -.045em;
+    }
+
+    .hero-app-splash strong span {
+      color: var(--blue);
+    }
+
+    .hero-app-splash small {
+      margin-top: 7px;
+      color: #78909e;
+      font-size: 8px;
+      letter-spacing: .03em;
+    }
+
+    .hero-app-home {
+      z-index: 3;
+      padding: 42px 15px 24px;
+      background: #f8fbfd;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .app-demo-live .hero-app-splash {
+      animation: appSplashOut .52s 1.15s ease forwards;
+    }
+
+    .app-demo-live .hero-app-home {
+      animation: appHomeIn .68s 1.05s cubic-bezier(.2,.75,.25,1) forwards;
+    }
+
+    .hero-app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-app-brand {
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: var(--fw-title);
+    }
+
+    .hero-app-avatar {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--navy);
+      color: #fff;
+      font-size: 8px;
+      font-weight: var(--fw-label);
+    }
+
+    .hero-app-greeting {
+      margin: 22px 0 3px;
+      color: #78909e;
+      font-size: 8px;
+    }
+
+    .hero-app-home h3 {
+      margin: 0 0 13px;
+      font-size: 19px;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+
+    .hero-app-case {
+      padding: 13px;
+      border: 1px solid #cfe2f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 10px 22px #20384a0d;
+    }
+
+    .hero-app-case small {
+      color: #78909e;
+      font-size: 7px;
+      letter-spacing: .06em;
+    }
+
+    .hero-app-case strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 12px;
+    }
+
+    .hero-app-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 7px 8px;
+      border-radius: 9px;
+      background: #eaf8ee;
+      color: #2f7b42;
+      font-size: 7px;
+      font-weight: var(--fw-label);
+    }
+
+    .hero-app-status i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 0 #22c55e55;
+      animation: appStatusPulse 1.8s 2s ease-out infinite;
+    }
+
+    .hero-app-progress {
+      height: 5px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dfe8ef;
+    }
+
+    .hero-app-progress i {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), #72b9ef);
+    }
+
+    .app-demo-live .hero-app-progress i {
+      animation: appProgress 1s 1.85s cubic-bezier(.2,.75,.25,1) forwards;
+    }
+
+    .hero-app-events {
+      display: grid;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .hero-app-event {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #e0e8ee;
+      border-radius: 10px;
+      background: #fff;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .hero-app-event svg {
+      width: 18px;
+      height: 18px;
+      padding: 4px;
+      border-radius: 6px;
+      background: #edf6fe;
+      color: var(--blue);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hero-app-event b {
+      display: block;
+      font-size: 8px;
+    }
+
+    .hero-app-event span {
+      display: block;
+      margin-top: 2px;
+      color: #8195a3;
+      font-size: 6px;
+    }
+
+    .app-demo-live .hero-app-event:nth-child(1) {
+      animation: appItemIn .42s 2.15s ease forwards;
+    }
+
+    .app-demo-live .hero-app-event:nth-child(2) {
+      animation: appItemIn .42s 2.38s ease forwards;
+    }
+
+    .hero-app-nav {
+      position: absolute;
+      right: 12px;
+      bottom: 14px;
+      left: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 7px 10px;
+      border: 1px solid #e2e9ee;
+      border-radius: 12px;
+      background: #fff;
+      color: #8aa0ae;
+      text-align: center;
+      box-shadow: 0 8px 20px #20384a0d;
+    }
+
+    .hero-app-nav b {
+      color: var(--blue);
+      font-size: 7px;
+    }
+
+    .hero-app-nav span {
+      font-size: 7px;
+    }
+
+    @keyframes appSplashOut {
+      to { opacity: 0; transform: scale(1.04); pointer-events: none; }
+    }
+
+    @keyframes appHomeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes appProgress {
+      to { width: 74%; }
+    }
+
+    @keyframes appItemIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes appStatusPulse {
+      65%, 100% { box-shadow: 0 0 0 7px #22c55e00; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-phone-shell,
+      .hero-app-splash,
+      .hero-app-home,
+      .hero-app-progress i,
+      .hero-app-event,
+      .hero-app-status i {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .hero-phone-shell,
+      .hero-app-home,
+      .hero-app-event {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .hero-app-splash {
+        display: none;
+      }
+
+      .hero-app-progress i {
+        width: 74%;
+      }
+    }
+
     /* Closing sequence: same typographic voice, no platform emojis */
     .closing-sequence .closing-title {
       font-weight: var(--fw-title) !important;
@@ -961,6 +1347,58 @@
       setTimeout(typeCharacter, 700);
     }
 
+    function enhanceHeroApp() {
+      const card = document.querySelector('.hero .logoCard');
+      if (!card) return;
+
+      if (!card.dataset.appPhoneBuilt) {
+        card.dataset.appPhoneBuilt = 'true';
+        card.classList.add('app-phone-stage');
+        card.innerHTML = `
+          <div class="hero-phone-shell" aria-label="Aplicación Ruta Segura abierta en el caso de Carolina">
+            <div class="hero-app-screen">
+              <div class="hero-app-splash">
+                <div class="app-mark">◇</div>
+                <strong>ruta<span>segura</span></strong>
+                <small>Tu caso, en una sola ruta.</small>
+              </div>
+              <div class="hero-app-home">
+                <div class="hero-app-bar">
+                  <div class="hero-app-brand">◇ rutasegura</div>
+                  <div class="hero-app-avatar">CP</div>
+                </div>
+                <p class="hero-app-greeting">Hola, Carolina</p>
+                <h3>Tu caso hipotecario</h3>
+                <section class="hero-app-case">
+                  <small>CASO RS–2026–0148</small>
+                  <strong>Corrección en curso</strong>
+                  <div class="hero-app-status"><i></i>Actualización recibida</div>
+                  <div class="hero-app-progress"><i></i></div>
+                </section>
+                <div class="hero-app-events">
+                  <div class="hero-app-event">
+                    <svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg>
+                    <div><b>Antecedentes revisados</b><span>Comprobante validado</span></div>
+                  </div>
+                  <div class="hero-app-event">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>
+                    <div><b>Banco verificando</b><span>Próxima actualización visible</span></div>
+                  </div>
+                </div>
+                <nav class="hero-app-nav"><b>Inicio</b><span>Caso</span><span>Ayuda</span></nav>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      const introIsVisible = Boolean(document.getElementById('introSequence'));
+      const waitsForReveal = card.classList.contains('reveal-item') && !card.classList.contains('reveal-visible');
+      if (introIsVisible || waitsForReveal || card.dataset.appPhoneStarted) return;
+
+      card.dataset.appPhoneStarted = 'true';
+      requestAnimationFrame(() => card.classList.add('app-demo-live'));
+    }
+
     const closingIcons = {
       pause: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"/><path d="M25 23v18M39 23v18"/></svg>',
       bank: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 25 32 12l23 13"/><path d="M13 27h38M16 50h32M11 55h42"/><path d="M19 29v19M29 29v19M39 29v19M49 29v19"/></svg>',
@@ -1033,6 +1471,13 @@
     prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
     const closingVisualObserver = new MutationObserver(enhanceClosingVisuals);
     closingVisualObserver.observe(document.documentElement, { childList: true, subtree: true });
+    const heroAppObserver = new MutationObserver(enhanceHeroApp);
+    heroAppObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       const revealPlans = [
