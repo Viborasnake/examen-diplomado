@@ -13,17 +13,30 @@ jobs:
       - run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          base='.pricing{display:grid;gap:8px}'
-          add='.kpiPricing .price{grid-template-columns:118px minmax(0,1fr);align-items:center;gap:18px;padding:18px 22px;min-height:112px;overflow:hidden}.kpiPricing .price span{font-size:clamp(32px,3.3vw,54px);line-height:.95;white-space:nowrap}.kpiPricing .price b{display:block;font-size:clamp(16px,1.55vw,24px);line-height:1.08;margin:0 0 6px;white-space:normal}.kpiPricing .price p{font-size:clamp(10px,.95vw,14px);line-height:1.3;margin:0;white-space:normal;overflow-wrap:anywhere}.kpiPricing .price>div{min-width:0}'
-          if '.kpiPricing .price{' not in s:
-              s=s.replace(base,base+add,1)
-          s=s.replace('<div class="pricing"><div class="price"><span>+30%</span>','<div class="pricing kpiPricing"><div class="price"><span>+30%</span>',1)
+
+          # Elimina el segundo controlador superpuesto que duplicaba eventos de click.
+          s=re.sub(r'// Intro controller bridge: keep controls visible and clickable during slide 0\.\n\(function\(\)\{.*?\}\)\(\);\n?', '', s, flags=re.S)
+
+          # La intro es la slide lógica 0: muestra microprogreso sin perder esa numeración.
+          s=s.replace("count.textContent=(introStep+1)+'/7'", "count.textContent='0 · '+(introStep+1)+'/7'")
+
+          # Durante la slide 0 el controlador debe permanecer visible; después vuelve al auto-hide normal.
+          old="function wakeControls(){if(!controlsAuto)return;controlsAuto.classList.remove('auto-hide');clearTimeout(controlsHideTimer);controlsHideTimer=setTimeout(()=>controlsAuto.classList.add('auto-hide'),1000)}"
+          new="function wakeControls(){if(!controlsAuto)return;controlsAuto.classList.remove('auto-hide');clearTimeout(controlsHideTimer);if(introSequence&&document.body.contains(introSequence)){return}controlsHideTimer=setTimeout(()=>controlsAuto.classList.add('auto-hide'),1000)}"
+          if old in s:
+              s=s.replace(old,new,1)
+
+          css='.controls.intro-hidden.auto-hide{opacity:1!important;pointer-events:auto!important;transform:translateX(-50%)!important}'
+          if css not in s:
+              s=s.replace('</style>',css+'</style>',1)
+
           p.write_text(s,encoding='utf-8')
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Corrige layout visual de KPIs' || exit 0
+          git commit -m 'Corrige controlador sin eventos duplicados' || exit 0
           git push
