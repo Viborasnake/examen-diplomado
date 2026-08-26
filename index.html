@@ -2018,12 +2018,172 @@
       animation-delay: 0.3s;
     }
 
+    /* Phone 2: progressive status tracking */
+    .status-demo-phone .status-pending {
+      opacity: 0;
+      transform: translateY(9px);
+      transition: opacity .34s ease, transform .42s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .status-demo-phone .status-shown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status-demo-phone .status-shown .dot {
+      animation: statusDotIn .4s cubic-bezier(.2,.8,.25,1.2);
+    }
+
+    .status-demo-phone .status-current .dot.wait {
+      animation: statusCurrentPulse 1.45s ease-in-out infinite;
+    }
+
+    /* Phone 3: evidence verification before closure */
+    .closure-demo-phone .closure-case {
+      opacity: 0;
+      transform: translateY(12px) scale(.985);
+      transition: opacity .38s ease, transform .48s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .closure-demo-phone .closure-case.case-shown {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .closure-demo-phone .closure-pending {
+      opacity: 0;
+      transform: translateY(7px);
+      transition: opacity .3s ease, transform .38s ease;
+    }
+
+    .closure-demo-phone .closure-shown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .case-verification-progress {
+      position: relative;
+      max-height: 58px;
+      margin-top: 9px;
+      padding: 8px 9px 10px 27px;
+      overflow: hidden;
+      border: 1px solid #cfe2f6;
+      border-radius: 8px;
+      background: #f1f8ff;
+      color: #416b89;
+      font-size: 7px;
+      font-weight: var(--fw-label);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .28s ease, transform .34s ease, max-height .28s ease, margin .28s ease, padding .28s ease, border .28s ease;
+    }
+
+    .case-verification-progress::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 9px;
+      width: 9px;
+      height: 9px;
+      border: 1.5px solid #b9d7ef;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+    }
+
+    .case-verification-progress i {
+      position: absolute;
+      right: 9px;
+      bottom: 5px;
+      left: 27px;
+      height: 2px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #d7e7f3;
+    }
+
+    .case-verification-progress i::after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+    }
+
+    .case-verification-progress.verify-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .case-verification-progress.verify-active::before {
+      animation: verificationSpin .72s linear infinite;
+    }
+
+    .case-verification-progress.verify-active i::after {
+      animation: verificationBar 1.1s .12s ease forwards;
+    }
+
+    .case-verification-progress.verify-done {
+      max-height: 0;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    .closure-demo-phone .ok.closure-shown {
+      animation: verifiedResultIn .48s cubic-bezier(.2,.8,.25,1.2);
+    }
+
     @keyframes chatCaret {
       50% { opacity: 0; }
     }
 
     @keyframes chatDot {
       to { transform: translateY(-3px); opacity: 0.45; }
+    }
+
+    @keyframes statusDotIn {
+      0% { transform: scale(.55); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes statusCurrentPulse {
+      50% { box-shadow: 0 0 0 5px rgba(63, 140, 213, .14); }
+    }
+
+    @keyframes verificationSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes verificationBar {
+      to { width: 100%; }
+    }
+
+    @keyframes verifiedResultIn {
+      0% { transform: translateY(7px) scale(.97); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .status-demo-phone .status-pending,
+      .closure-demo-phone .closure-case,
+      .closure-demo-phone .closure-pending,
+      .case-verification-progress {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      .status-demo-phone .status-current .dot.wait,
+      .case-verification-progress,
+      .case-verification-progress::before,
+      .case-verification-progress i::after,
+      .closure-demo-phone .ok.closure-shown {
+        animation: none !important;
+      }
     }
 
     /* Speaker-led slide motion */
@@ -2339,6 +2499,68 @@
       setTimeout(typeCharacter, 700);
     }
 
+    function schedulePhoneAnimation(phone, delay, action) {
+      setTimeout(() => {
+        if (phone?.isConnected) action();
+      }, delay);
+    }
+
+    function startPrototypeStatusAnimation(phone) {
+      if (!phone || phone.dataset.statusAnimated) return;
+      phone.dataset.statusAnimated = 'true';
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const events = [...phone.querySelectorAll('.event')];
+      if (!events.length) return;
+      phone.classList.add('status-demo-phone');
+      events.forEach(event => event.classList.add('status-pending'));
+
+      events.forEach((event, index) => {
+        schedulePhoneAnimation(phone, 420 + index * 430, () => {
+          event.classList.remove('status-pending');
+          event.classList.add('status-shown');
+          if (index === events.length - 1) event.classList.add('status-current');
+        });
+      });
+    }
+
+    function startPrototypeClosureAnimation(phone) {
+      if (!phone || phone.dataset.closureAnimated) return;
+      phone.dataset.closureAnimated = 'true';
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const caseCard = phone.querySelector('.case');
+      const verified = caseCard?.querySelector('.ok');
+      if (!caseCard || !verified) return;
+
+      phone.classList.add('closure-demo-phone');
+      caseCard.classList.add('closure-case');
+      const caseDetails = [...caseCard.children].filter(element => element !== verified);
+      [...caseDetails, verified].forEach(element => element.classList.add('closure-pending'));
+
+      const verification = document.createElement('div');
+      verification.className = 'case-verification-progress';
+      verification.setAttribute('aria-hidden', 'true');
+      verification.innerHTML = '<span>Verificando evidencia…</span><i></i>';
+      verified.before(verification);
+
+      schedulePhoneAnimation(phone, 280, () => caseCard.classList.add('case-shown'));
+      caseDetails.forEach((detail, index) => {
+        schedulePhoneAnimation(phone, 560 + index * 280, () => {
+          detail.classList.remove('closure-pending');
+          detail.classList.add('closure-shown');
+        });
+      });
+
+      schedulePhoneAnimation(phone, 1450, () => verification.classList.add('verify-active'));
+      schedulePhoneAnimation(phone, 2780, () => {
+        verification.classList.remove('verify-active');
+        verification.classList.add('verify-done');
+        verified.classList.remove('closure-pending');
+        verified.classList.add('closure-shown');
+      });
+    }
+
     function enhanceHeroApp() {
       const card = document.querySelector('.hero .logoCard');
       if (!card) return;
@@ -2553,15 +2775,19 @@
       heading.closest('.main')?.querySelector('.valueCards')?.parentElement?.classList.add('bank-value-body');
     }
 
-    function enhancePrototypeChat() {
-      const phone = document.querySelector('.phones .phone:first-child');
-      if (!phone) return;
-      if (phone.classList.contains('reveal-item') && !phone.classList.contains('reveal-visible')) return;
-      startPrototypeChatAnimation(phone);
+    function enhancePrototypePhones() {
+      const phones = [...document.querySelectorAll('.phones .phone')];
+      phones.forEach((phone, index) => {
+        if (phone.classList.contains('reveal-item') && !phone.classList.contains('reveal-visible')) return;
+        if (index > 0 && !phone.classList.contains('reveal-visible')) return;
+        if (index === 0) startPrototypeChatAnimation(phone);
+        if (index === 1) startPrototypeStatusAnimation(phone);
+        if (index === 2) startPrototypeClosureAnimation(phone);
+      });
     }
 
-    const prototypeChatObserver = new MutationObserver(enhancePrototypeChat);
-    prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
+    const prototypePhoneObserver = new MutationObserver(enhancePrototypePhones);
+    prototypePhoneObserver.observe(document.documentElement, { childList: true, subtree: true });
     const closingVisualObserver = new MutationObserver(enhanceClosingVisuals);
     closingVisualObserver.observe(document.documentElement, { childList: true, subtree: true });
     const bankValueObserver = new MutationObserver(enhanceBankValueSlide);
@@ -2679,7 +2905,7 @@
         });
         revealStep = Math.max(revealStep, groupIndex + 1);
         updateSpeakerCount();
-        enhancePrototypeChat();
+        enhancePrototypePhones();
         return true;
       }
 
