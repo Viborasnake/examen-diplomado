@@ -4101,6 +4101,7 @@ function setIntroStep(step){
   bar.style.width=((introStep+1)/introOrder.length*100)+'%';
   count.textContent='0 · '+(introStep+1)+'/'+introOrder.length;
   syncPresenter(0,true);
+  if(introStep>0&&typeof startPresentationTimer==='function') startPresentationTimer();
 }
 function finishIntro(){
   if(!introSequence||introSequence.classList.contains('is-done'))return;
