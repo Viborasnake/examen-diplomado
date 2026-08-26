@@ -187,6 +187,117 @@
         font-size: 36px;
       }
     }
+
+    .phones {
+      grid-template-columns: repeat(3, minmax(0, clamp(190px, 17vw, 235px)));
+      justify-content: center;
+      align-items: center;
+      gap: clamp(30px, 4vw, 58px);
+    }
+
+    .phone {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 18.5;
+      padding: 8px;
+      border: 3px solid #24323d;
+      border-radius: 40px;
+      background: #dfe7ed;
+      box-shadow: 0 24px 52px #21384c26, inset 0 0 0 1px #ffffffb8;
+      overflow: visible;
+    }
+
+    .phone::before,
+    .phone::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 5px;
+      border-radius: 4px;
+      background: #24323d;
+    }
+
+    .phone::before {
+      left: -6px;
+      top: 82px;
+      height: 44px;
+      box-shadow: 0 58px 0 #24323d;
+    }
+
+    .phone::after {
+      right: -6px;
+      top: 112px;
+      height: 72px;
+    }
+
+    .phone .screen {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      padding: 17px 16px 20px;
+    }
+
+    .phone .screen::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 72px;
+      height: 4px;
+      border-radius: 999px;
+      background: #1b2630;
+      transform: translateX(-50%);
+      opacity: 0.9;
+    }
+
+    .phone .notch {
+      width: 82px;
+      height: 19px;
+      margin-top: -11px;
+      margin-bottom: 14px;
+    }
+
+    .phone .screen h3 {
+      font-size: clamp(18px, 1.55vw, 22px);
+      line-height: 1.05;
+    }
+
+    .phone .case small {
+      font-size: 9px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .phone .btn {
+      left: 24px;
+      right: 24px;
+      bottom: 25px;
+    }
+
+    .phoneCap {
+      top: -20px;
+      left: 16px;
+      box-shadow: 0 6px 16px #3f8cd51a;
+    }
+
+    @media (max-height: 680px) and (min-width: 901px) {
+      .phones {
+        grid-template-columns: repeat(3, minmax(0, 205px));
+        gap: 38px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .phones {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 28px;
+      }
+
+      .phone {
+        width: min(235px, 100%);
+      }
+    }
   </style>
   <script>
     document.head.appendChild(document.getElementById('typographic-weight-system'));
