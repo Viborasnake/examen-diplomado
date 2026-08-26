@@ -185,15 +185,19 @@
       .thanks-team{grid-template-columns:repeat(2,minmax(0,180px))}
     }
     .hero{
-      align-items:end!important;
+      align-items:stretch!important;
       grid-template-columns:1.05fr .95fr!important;
       gap:8px!important;
+    }
+    .hero-copy{
+      align-self:center;
     }
     .hero-figure{
       position:relative;
       display:grid;
       justify-items:center;
       align-content:end;
+      align-self:end;
       min-height:min(560px,74vh);
     }
     .hero-figure img{
