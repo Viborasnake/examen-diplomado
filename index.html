@@ -6,8 +6,22 @@
     .stagebar{display:none!important}
     .main{
       display:grid;
-      align-content:center;
-      align-items:center;
+      grid-template-rows: auto minmax(0, 1fr);
+      align-content: stretch;
+      align-items: stretch;
+      min-height: 0;
+    }
+    .main > div:has(> h1.title){
+      align-self: start;
+      width: 100%;
+    }
+    .main > div:has(> h1.title) .title{
+      margin: 0 0 8px;
+    }
+    .main > :not(:has(> h1.title)){
+      align-self: center;
+      width: 100%;
+      min-height: 0;
     }
     .item p,.node p,.phase p,.price p,.card p,.column p,.delta p,.role p,.valueCards p{
       font-size:13px!important;
@@ -459,28 +473,77 @@
     .hero-proto-photos .prototype-dots {
       bottom: 4px;
     }
-    .phones.prototype-route.real-proto {
-      grid-template-columns: repeat(5, minmax(0, clamp(168px, 16vw, 228px)));
-      align-items: start;
-    }
-    .real-proto .phone {
-      height: auto;
-      aspect-ratio: auto;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-      overflow: visible;
-    }
-    .real-proto .phone::before,
-    .real-proto .phone::after {
-      display: none;
-    }
-    .real-proto .phone img {
+    .phones.prototype-route {
+      grid-template-columns: repeat(5, minmax(0, clamp(150px, 15.2vw, 210px))) !important;
+      justify-content: center;
+      align-items: end;
+      gap: clamp(14px, 1.6vw, 24px) !important;
       width: 100%;
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 14px 28px rgba(32, 56, 74, .2));
+    }
+    .phones.prototype-route .phone {
+      position: relative;
+      width: 100%;
+      height: auto !important;
+      aspect-ratio: 9 / 18.6 !important;
+      padding: 6px !important;
+      border: 3px solid #24323d !important;
+      border-radius: 34px !important;
+      background: linear-gradient(180deg, #e8eef3, #cfd8e0) !important;
+      box-shadow: 0 18px 42px #21384c2e, inset 0 0 0 1px #ffffffc8 !important;
+      overflow: visible !important;
+    }
+    .phones.prototype-route .phone::before {
+      display: block !important;
+      left: -6px;
+      top: 72px;
+      height: 36px;
+      box-shadow: 0 48px 0 #24323d;
+    }
+    .phones.prototype-route .phone::after {
+      display: block !important;
+      right: -6px;
+      top: 98px;
+      height: 58px;
+    }
+    .phones.prototype-route .phone .screen {
+      position: relative;
+      height: 100%;
+      padding: 0 !important;
+      border-radius: 27px !important;
+      overflow: hidden !important;
+      background: #f3f7fb !important;
+    }
+    .phones.prototype-route .phone .screen::before {
+      content: "";
+      position: absolute;
+      z-index: 8;
+      top: 7px;
+      left: 50%;
+      width: 46%;
+      height: 13px;
+      border-radius: 20px;
+      background: #1b2630;
+      transform: translateX(-50%);
+    }
+    .phones.prototype-route .phone .screen::after {
+      content: "";
+      position: absolute;
+      z-index: 8;
+      bottom: 5px;
+      left: 50%;
+      width: 30%;
+      height: 3px;
+      border-radius: 99px;
+      background: #1b2630;
+      transform: translateX(-50%);
+    }
+    .phones.prototype-route .rs-app {
+      padding-top: 2.55em;
+    }
+    .phones.prototype-route .phoneCap {
+      top: -18px;
+      left: 10px;
+      z-index: 4;
     }
 
 
@@ -3030,7 +3093,6 @@
       if (!route || route.dataset.completeRoute) return;
       route.dataset.completeRoute = 'true';
       route.classList.add('prototype-route');
-      route.classList.add('real-proto');
       route.innerHTML = `
         <div class="phone">
           <span class="phoneCap">1 · RELATO</span>
