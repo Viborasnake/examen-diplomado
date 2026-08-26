@@ -1,0 +1,30 @@
+name: Fix intro controller persistence
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-intro-controller.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep controller visible during intro
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("ctl.classList.remove('hidden');ctl.classList.remove('intro-hidden')","ctl.classList.remove('hidden');ctl.classList.add('intro-hidden')")
+          extra='.controls.intro-hidden.hidden{opacity:1!important;pointer-events:auto!important;visibility:visible!important}'
+          if extra not in s:
+              s=s.replace('</style>',extra+'</style>',1)
+          p.write_text(s,encoding='utf-8')
+          Path('.github/workflows/fix-intro-controller.yml').unlink(missing_ok=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Mantiene controlador visible durante toda la intro' || exit 0
+          git push
