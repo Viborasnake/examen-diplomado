@@ -1,0 +1,91 @@
+name: Remove why Ruta Segura slide
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-why-ruta.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove slide from presentation and speaker
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          # Presentation
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = "title:'¿Por qué este producto y no otro?'"
+          if marker not in s:
+              marker = "title:'¿Por qué Ruta Segura?'"
+          if marker not in s:
+              raise SystemExit('No se encontró la slide ¿Por qué Ruta Segura? en index.html')
+          m = s.index(marker)
+          start = s.rfind(',{stage:', 0, m)
+          if start == -1:
+              start = s.rfind('{stage:', 0, m)
+          end = s.find('`},', m)
+          if end == -1:
+              raise SystemExit('No se pudo determinar el final de la slide en index.html')
+          end += 3
+          s = s[:start] + s[end:]
+
+          # Renumerar kickers visibles, dejando el primero (portada pitch) sin prefijo numérico.
+          count = {'n': 0}
+          def renum(m):
+              text = m.group(1)
+              if 'RUTA SEGURA · PITCH' in text:
+                  return m.group(0)
+              count['n'] += 1
+              label = re.sub(r'^\d+\s*·\s*', '', text)
+              return "k:'%02d · %s'" % (count['n'], label)
+          s = re.sub(r"k:'([^']*)'", renum, s)
+          p.write_text(s, encoding='utf-8')
+
+          # Speaker
+          sp = Path('speaker.html')
+          t = sp.read_text(encoding='utf-8')
+          pat = re.compile(r'<article class="card" id="s\d+"[^>]*>.*?<h2 class="title">¿Por qué Ruta Segura\?</h2>.*?</article>', re.S)
+          t, n = pat.subn('', t, count=1)
+          if n != 1:
+              raise SystemExit('No se encontró la tarjeta ¿Por qué Ruta Segura? en speaker.html')
+
+          # Renumerar cards y números según orden real.
+          card_pat = re.compile(r'<article class="card" id="s\d+".*?</article>', re.S)
+          idx = {'n': -1}
+          def renum_card(m):
+              idx['n'] += 1
+              i = idx['n']
+              card = m.group(0)
+              card = re.sub(r'id="s\d+"', f'id="s{i}"', card, count=1)
+              card = re.sub(r'<div class="num">\d+</div>', f'<div class="num">{i:02d}</div>', card, count=1)
+              return card
+          t = card_pat.sub(renum_card, t)
+          last = idx['n']
+          timeline = '<nav class="timeline" aria-label="Ir a una sección">' + ''.join(f'<a href="#s{i}">{i:02d}</a>' for i in range(last+1)) + '</nav>'
+          t = re.sub(r'<nav class="timeline" aria-label="Ir a una sección">.*?</nav>', timeline, t, count=1, flags=re.S)
+          sp.write_text(t, encoding='utf-8')
+
+          Path('.github/workflows/remove-why-ruta.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Quita slide Por qué Ruta Segura de presentación y speaker"
+          git push
