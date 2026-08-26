@@ -3040,22 +3040,24 @@
 
     .reveal-item {
       opacity: 0;
+      visibility: hidden;
       transform: translateY(18px) scale(.985);
       filter: blur(3px);
       pointer-events: none;
+      transition: none;
+    }
+
+    .slide.reveals-ready .reveal-item.reveal-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      pointer-events: auto;
       transition:
         opacity .42s ease,
         transform .52s cubic-bezier(.2,.75,.25,1),
         filter .38s ease,
-        box-shadow .22s ease;
-      will-change: opacity, transform;
-    }
-
-    .reveal-item.reveal-visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-      pointer-events: auto;
+        visibility 0s linear;
     }
 
     .reveal-item.reveal-just-entered {
@@ -3807,7 +3809,6 @@
         }
 
         updateSpeakerCount();
-        if (revealGroups.length) revealGroup(0, false);
       }
 
       function playSlideEntry(direction) {
@@ -3823,12 +3824,26 @@
       render = function enhancedRender() {
         const direction = idx < lastRenderedIndex ? -1 : 1;
         el.classList.add('is-arming');
+        el.classList.remove('reveals-ready');
         originalRender();
         prepareSlideReveals(revealAllOnRender);
-        el.classList.remove('is-arming');
-        if (!revealGroups.length) playSlideEntry(direction);
+        const armedGroups = revealGroups;
+        const showAll = revealAllOnRender;
         revealAllOnRender = false;
         lastRenderedIndex = idx;
+        if (!armedGroups.length) {
+          el.classList.remove('is-arming');
+          playSlideEntry(direction);
+          return;
+        }
+        requestAnimationFrame(() => {
+          el.classList.remove('is-arming');
+          requestAnimationFrame(() => {
+            el.classList.add('reveals-ready');
+            if (showAll) armedGroups.forEach((_, i) => revealGroup(i, false));
+            else revealGroup(0, false);
+          });
+        });
       };
 
       const closingStart = 13;
