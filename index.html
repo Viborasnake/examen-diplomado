@@ -483,9 +483,290 @@
         transform: rotate(90deg);
       }
     }
+
+    .chat-keyboard {
+      position: absolute;
+      z-index: 5;
+      left: 6px;
+      right: 6px;
+      bottom: 15px;
+      padding: 7px 5px 6px;
+      border-radius: 12px 12px 20px 20px;
+      background: #dbe2e8e8;
+      box-shadow: 0 -8px 22px #20384a1f;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      transform: translateY(120%);
+      transition: opacity 0.3s ease, transform 0.45s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .chat-key-row {
+      display: flex;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    .chat-key-row:first-child {
+      margin-top: 0;
+    }
+
+    .chat-key-row span {
+      flex: 1;
+      min-width: 0;
+      height: 20px;
+      border-radius: 4px;
+      background: #fff;
+      color: #344b5b;
+      font-size: 6px;
+      font-weight: var(--fw-label);
+      line-height: 20px;
+      text-align: center;
+      box-shadow: 0 1px 2px #20384a24;
+    }
+
+    .chat-key-row .chat-space {
+      flex: 3.7;
+    }
+
+    .chat-key-row .chat-send-key {
+      flex: 1.8;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .chat-composer {
+      position: absolute;
+      z-index: 6;
+      left: 10px;
+      right: 10px;
+      bottom: 132px;
+      min-height: 34px;
+      padding: 8px 32px 8px 10px;
+      border: 1px solid #c5d3df;
+      border-radius: 18px;
+      background: #fff;
+      color: #294355;
+      box-shadow: 0 7px 18px #20384a1c;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.25s ease, transform 0.35s ease;
+    }
+
+    .chat-typed {
+      display: inline;
+      font-size: 8px;
+      line-height: 1.25;
+    }
+
+    .chat-typed:empty::before {
+      content: "Escribe tu respuesta…";
+      color: #91a3b0;
+    }
+
+    .chat-caret {
+      display: inline-block;
+      width: 1px;
+      height: 10px;
+      margin-left: 2px;
+      background: var(--blue);
+      vertical-align: -2px;
+      animation: chatCaret 0.7s steps(1) infinite;
+    }
+
+    .chat-send {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      line-height: 24px;
+      text-align: center;
+    }
+
+    .chat-demo-phone.chat-active .chat-keyboard,
+    .chat-demo-phone.chat-active .chat-composer {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .chat-demo-phone.chat-sent .chat-keyboard {
+      opacity: 0;
+      transform: translateY(120%);
+    }
+
+    .chat-demo-phone.chat-sent .chat-composer {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    .chat-pending {
+      opacity: 0 !important;
+      transform: translateY(8px);
+      transition: opacity 0.35s ease, transform 0.4s ease;
+    }
+
+    .chat-revealed {
+      opacity: 1 !important;
+      transform: translateY(0);
+    }
+
+    .chat-ai-thinking {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      width: max-content;
+      height: 28px;
+      margin: 8px 0;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.3s ease, height 0.25s ease, margin 0.25s ease, padding 0.25s ease;
+    }
+
+    .chat-ai-thinking.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .chat-ai-thinking.done {
+      height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .chat-ai-thinking i {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--blue);
+      animation: chatDot 0.8s ease-in-out infinite alternate;
+    }
+
+    .chat-ai-thinking i:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .chat-ai-thinking i:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes chatCaret {
+      50% { opacity: 0; }
+    }
+
+    @keyframes chatDot {
+      to { transform: translateY(-3px); opacity: 0.45; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chat-keyboard,
+      .chat-composer,
+      .chat-pending,
+      .chat-ai-thinking {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
   <script>
     document.head.appendChild(document.getElementById('typographic-weight-system'));
+
+    function revealChatStep(element) {
+      if (!element || !element.isConnected) return;
+      element.classList.remove('chat-pending');
+      element.classList.add('chat-revealed');
+    }
+
+    function startPrototypeChatAnimation(phone) {
+      if (!phone || phone.dataset.chatAnimated) return;
+      phone.dataset.chatAnimated = 'true';
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const screen = phone.querySelector('.screen');
+      const bubbles = [...phone.querySelectorAll('.bubble')];
+      const continueButton = phone.querySelector('.btn');
+      if (!screen || bubbles.length < 4 || !continueButton) return;
+
+      phone.classList.add('chat-demo-phone');
+      [bubbles[1], bubbles[2], bubbles[3], continueButton].forEach(element => element.classList.add('chat-pending'));
+
+      const thinking = document.createElement('div');
+      thinking.className = 'chat-ai-thinking';
+      thinking.setAttribute('aria-hidden', 'true');
+      thinking.innerHTML = '<i></i><i></i><i></i>';
+      bubbles[2].before(thinking);
+
+      const composer = document.createElement('div');
+      composer.className = 'chat-composer';
+      composer.setAttribute('aria-hidden', 'true');
+      composer.innerHTML = '<span class="chat-typed"></span><i class="chat-caret"></i><b class="chat-send">↑</b>';
+
+      const keyboard = document.createElement('div');
+      keyboard.className = 'chat-keyboard';
+      keyboard.setAttribute('aria-hidden', 'true');
+      keyboard.innerHTML = `
+        <div class="chat-key-row"><span>Q</span><span>W</span><span>E</span><span>R</span><span>T</span><span>Y</span><span>U</span><span>I</span><span>O</span><span>P</span></div>
+        <div class="chat-key-row"><span>A</span><span>S</span><span>D</span><span>F</span><span>G</span><span>H</span><span>J</span><span>K</span><span>L</span></div>
+        <div class="chat-key-row"><span>⇧</span><span>Z</span><span>X</span><span>C</span><span>V</span><span>B</span><span>N</span><span>M</span><span>⌫</span></div>
+        <div class="chat-key-row"><span>123</span><span class="chat-space">espacio</span><span class="chat-send-key">Enviar</span></div>`;
+
+      screen.append(composer, keyboard);
+      requestAnimationFrame(() => phone.classList.add('chat-active'));
+
+      const typed = composer.querySelector('.chat-typed');
+      const message = bubbles[1].textContent.trim();
+      let character = 0;
+
+      function sendMessage() {
+        if (!phone.isConnected) return;
+        phone.classList.remove('chat-active');
+        phone.classList.add('chat-sent');
+        revealChatStep(bubbles[1]);
+        thinking.classList.add('active');
+
+        setTimeout(() => {
+          if (!phone.isConnected) return;
+          thinking.classList.remove('active');
+          thinking.classList.add('done');
+          revealChatStep(bubbles[2]);
+        }, 750);
+
+        setTimeout(() => revealChatStep(bubbles[3]), 1350);
+        setTimeout(() => revealChatStep(continueButton), 1750);
+      }
+
+      function typeCharacter() {
+        if (!phone.isConnected) return;
+        typed.textContent = message.slice(0, character + 1);
+        character += 1;
+        if (character < message.length) {
+          setTimeout(typeCharacter, 48);
+        } else {
+          setTimeout(sendMessage, 280);
+        }
+      }
+
+      setTimeout(typeCharacter, 700);
+    }
+
+    function enhancePrototypeChat() {
+      startPrototypeChatAnimation(document.querySelector('.phones .phone:first-child'));
+    }
+
+    const prototypeChatObserver = new MutationObserver(enhancePrototypeChat);
+    prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
   </script>
   <section class="intro-state intro-dream active" data-intro="dream">
     <div class="intro-inner"><div class="intro-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 30 32 12l22 18"/><path d="M16 27v25h32V27"/><path d="M26 52V37h12v15"/></svg></div>
