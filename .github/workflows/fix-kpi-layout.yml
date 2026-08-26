@@ -1,0 +1,29 @@
+name: Fix KPI layout
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-kpi-layout.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          base='.pricing{display:grid;gap:8px}'
+          add='.kpiPricing .price{grid-template-columns:118px minmax(0,1fr);align-items:center;gap:18px;padding:18px 22px;min-height:112px;overflow:hidden}.kpiPricing .price span{font-size:clamp(32px,3.3vw,54px);line-height:.95;white-space:nowrap}.kpiPricing .price b{display:block;font-size:clamp(16px,1.55vw,24px);line-height:1.08;margin:0 0 6px;white-space:normal}.kpiPricing .price p{font-size:clamp(10px,.95vw,14px);line-height:1.3;margin:0;white-space:normal;overflow-wrap:anywhere}.kpiPricing .price>div{min-width:0}'
+          if '.kpiPricing .price{' not in s:
+              s=s.replace(base,base+add,1)
+          s=s.replace('<div class="pricing"><div class="price"><span>+30%</span>','<div class="pricing kpiPricing"><div class="price"><span>+30%</span>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Corrige layout visual de KPIs' || exit 0
+          git push
