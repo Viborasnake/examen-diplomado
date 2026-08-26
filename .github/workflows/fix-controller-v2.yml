@@ -146,3 +146,4 @@ setTimeout(()=>{timerRun=setInterval(()=>{if(timerRemaining>0)timerRemaining--;d
           git diff --cached --quiet && exit 0
           git commit -m 'Corrige navegación y estado del controlador'
           git push
+# trigger v2
