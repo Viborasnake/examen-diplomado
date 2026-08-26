@@ -80,11 +80,11 @@ body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify
 <script>
 (() => {
   const control = document.getElementById('autoScroll');
-  const speed = 26;
+  const speed = 42;
+  const scroller = document.scrollingElement || document.documentElement;
   let playing = false;
   let animationFrame = 0;
   let lastFrame = 0;
-  let previousScrollBehavior = '';
 
   function updateControl() {
     control.setAttribute('aria-pressed', String(playing));
@@ -94,28 +94,25 @@ body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify
   function stop() {
     playing = false;
     cancelAnimationFrame(animationFrame);
-    document.documentElement.style.scrollBehavior = previousScrollBehavior;
     updateControl();
   }
 
   function scrollStep(now) {
     if (!playing) return;
-    const maximum = document.documentElement.scrollHeight - window.innerHeight;
-    if (maximum <= 0 || window.scrollY >= maximum - 1) {
+    const maximum = scroller.scrollHeight - scroller.clientHeight;
+    if (maximum <= 0 || scroller.scrollTop >= maximum - 1) {
       stop();
       return;
     }
     const elapsed = Math.min(80, now - lastFrame);
     lastFrame = now;
-    window.scrollTo(0, Math.min(maximum, window.scrollY + speed * elapsed / 1000));
+    scroller.scrollTop = Math.min(maximum, scroller.scrollTop + speed * elapsed / 1000);
     animationFrame = requestAnimationFrame(scrollStep);
   }
 
   function start() {
-    const maximum = document.documentElement.scrollHeight - window.innerHeight;
-    if (window.scrollY >= maximum - 1) window.scrollTo(0, 0);
-    previousScrollBehavior = document.documentElement.style.scrollBehavior;
-    document.documentElement.style.scrollBehavior = 'auto';
+    const maximum = scroller.scrollHeight - scroller.clientHeight;
+    if (scroller.scrollTop >= maximum - 1) scroller.scrollTop = 0;
     playing = true;
     lastFrame = performance.now();
     updateControl();
