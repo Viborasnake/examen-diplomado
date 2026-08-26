@@ -1,0 +1,52 @@
+name: Update bank value slide
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-bank-value.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update presentation and speaker
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = "{stage:5,time:'8:10–8:30',k:'12 · VALOR PARA EL BANCO',title:'Continuidad + eficiencia + trazabilidad',body:`<div class=\"value\"><div><div class=\"valueCards\"><article><small>MENOS TRABAJO EVITABLE</small><b>Menos contactos y reproceso</b><p>Clasificación, derivaciones y reconstrucción de antecedentes.</p></article><article><small>MÁS OPERACIONES VIABLES</small><b>Margen potencial preservado</b><p>Operaciones que no caen por una inconsistencia corregible.</p></article><article><small>MÁS TRAZABILIDAD</small><b>Evidencia de gestión</b><p>Apoyo al control y al nuevo contexto regulatorio.</p></article></div><div class=\"formula\">Valor por comprobar = trabajo evitado + margen potencial preservado + trazabilidad − costo total</div></div><div class=\"sensitivity\"><small>ESCENARIO EXPLORATORIO · NO AHORRO DEMOSTRADO</small><div class=\"money\">$487 MM</div><div>interés bruto temporalmente expuesto</div><div class=\"barRange\"><i></i></div><div class=\"ticks\"><span>$117 MM</span><span>$1.462 MM</span></div></div></div>`},"
+          new = "{stage:5,time:'8:10–8:30',k:'12 · VALOR PARA EL BANCO',title:'¿Por qué un banco pagaría por Ruta Segura?',body:`<div><div class=\"valueCards\"><article style=\"background:#F5FAFF;border-color:#CFE2F6\"><small>MENOR CARGA OPERATIVA</small><b>Menos contactos y reprocesos</b><p>Reduce clasificación manual, derivaciones y reconstrucción de antecedentes entre canales.</p></article><article style=\"background:#F5FAFF;border-color:#CFE2F6\"><small>MÁS OPERACIONES VIABLES</small><b>Más continuidad hipotecaria</b><p>Busca evitar que una operación potencialmente aprobable se caiga solo porque una corrección no llegó a tiempo.</p></article><article style=\"background:#F5FAFF;border-color:#CFE2F6\"><small>MAYOR TRAZABILIDAD</small><b>Un expediente verificable</b><p>Conecta corrección, actualización y reingreso en una sola ruta de evidencia.</p></article></div><div class=\"thesis\" style=\"margin-top:22px;text-align:center;font-size:clamp(18px,1.7vw,27px);padding:24px 28px\"><b>El banco no paga por corregir datos.</b><br>Paga por recuperar continuidad en operaciones que todavía pueden colocarse.</div><div style=\"margin-top:12px;text-align:center;color:var(--muted);font-size:12px\">El impacto operativo y el ahorro económico deben validarse en el piloto.</div></div>`},"
+          if old not in s:
+              raise SystemExit('No se encontró la slide actual Valor para el banco')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+
+          sp = Path('speaker.html')
+          t = sp.read_text(encoding='utf-8')
+          old_sp = '<article class="card" id="s13"><aside class="side"><div class="num">13</div></aside><div><h2 class="title">Valor para el banco</h2><div class="script"><p>Menos trabajo evitable, más operaciones viables y más trazabilidad. La sensibilidad de 487 millones sigue siendo exploratoria y debe reemplazarse por evidencia observada.</p></div></div></article>'
+          new_sp = '<article class="card" id="s13"><aside class="side"><div class="num">13</div></aside><div><h2 class="title">Valor para el banco</h2><div class="script"><p>La pregunta aquí es simple: ¿por qué un banco pagaría por Ruta Segura?</p><p><b>Primero, menor carga operativa:</b> menos contactos, derivaciones y reprocesos para reconstruir un caso que llegó incompleto o por el canal equivocado.</p><p><b>Segundo, más operaciones viables:</b> buscamos evitar que un crédito potencialmente aprobable se caiga solo porque una corrección no llegó a tiempo.</p><p><b>Tercero, mayor trazabilidad:</b> un expediente verificable que conecta corrección, actualización y reingreso.</p><p><b>El banco no paga por corregir datos. Paga por recuperar continuidad en operaciones que todavía pueden colocarse.</b></p><p>El impacto operativo y el ahorro económico siguen siendo hipótesis y deben validarse en el piloto.</p></div></div></article>'
+          if old_sp not in t:
+              raise SystemExit('No se encontró la tarjeta Valor para el banco en speaker')
+          t = t.replace(old_sp, new_sp, 1)
+          sp.write_text(t, encoding='utf-8')
+
+          Path('.github/workflows/update-bank-value.yml').unlink(missing_ok=True)
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Simplifica valor para el banco"
+          git push
