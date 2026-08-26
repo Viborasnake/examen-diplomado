@@ -80,7 +80,7 @@
     .slide.closing-sequence:has(.close-bank){background:#F1F8FF!important}
     .slide.closing-sequence:has(.close-ok){background:#F3FBF5!important}
     .slide.closing-sequence:has(.close-win){background:#fff!important}
-    .slide.closing-sequence:has(.close-thanks){background:#10202c!important}
+    .slide.closing-sequence:has(.close-thanks){background:#fff!important}
     .slide.closing-sequence .top,
     .slide.closing-sequence .footer,
     .slide.closing-sequence .top-meta{
@@ -127,41 +127,60 @@
     .close-ok h1{color:#1E9B43!important}
     .close-win{background:#fff}
     .close-thanks{
-      background:
-        radial-gradient(ellipse 70% 52% at 50% -8%, rgba(63,140,213,.32), transparent 60%),
-        radial-gradient(ellipse 42% 40% at 100% 110%, rgba(63,140,213,.14), transparent 55%),
-        #10202c;
-      color:#fff;
-      gap:32px;
+      background:#fff;
+      color:var(--navy);
+      gap:20px;
+      overflow:visible;
     }
-    .close-thanks h1{font-size:clamp(64px,8vw,124px);line-height:.88;letter-spacing:-.065em;margin:0;font-weight:800;color:#fff}
+    .close-thanks h1{font-size:clamp(64px,8vw,124px);line-height:.88;letter-spacing:-.065em;margin:0 0 8px;font-weight:800;color:var(--navy)}
     .thanks-team{
       display:grid;
-      grid-template-columns:repeat(4,minmax(0,200px));
-      gap:16px;
+      grid-template-columns:repeat(4,minmax(0,210px));
+      gap:28px 20px;
       justify-content:center;
-      width:min(920px,92vw);
+      align-items:end;
+      width:min(980px,92vw);
     }
     .thanks-card{
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:22px;
-      padding:22px 16px 18px;
+      background:transparent;
+      border:0;
+      padding:0;
+      overflow:visible;
     }
-    .thanks-card img{
-      width:96px;height:96px;
-      display:block;
-      margin:0 auto 14px;
+    .thanks-avatar{
+      position:relative;
+      width:158px;
+      height:188px;
+      margin:0 auto 10px;
+    }
+    .thanks-avatar:before{
+      content:"";
+      position:absolute;
+      z-index:0;
+      left:50%;
+      bottom:8px;
+      width:124px;
+      height:124px;
+      transform:translateX(-50%);
       border-radius:50%;
-      object-fit:cover;
-      object-position:50% 12%;
+      background:#EEF5FC;
       border:3px solid #3F8CD5;
+      box-shadow:0 14px 28px #3F8CD51A;
     }
-    .thanks-card.vale img{border-color:#22C55E}
-    .thanks-card.erick img{border-color:#E0A04A}
-    .thanks-card.tami img{border-color:#8B7CF6}
-    .thanks-card h3{margin:0 0 4px;font-size:22px;font-weight:800;font-family:"Plus Jakarta Sans",Inter,sans-serif}
-    .thanks-card p{margin:0;font-size:13px;font-weight:600;color:#9BB4C6}
+    .thanks-card.vale .thanks-avatar:before{background:#EEF9F1;border-color:#22C55E}
+    .thanks-card.erick .thanks-avatar:before{background:#FBF6EA;border-color:#E0A04A}
+    .thanks-card.tami .thanks-avatar:before{background:#F4F1FE;border-color:#8B7CF6}
+    .thanks-avatar img{
+      position:relative;
+      z-index:1;
+      width:158px;
+      height:188px;
+      object-fit:contain;
+      object-position:center bottom;
+      filter:drop-shadow(0 10px 18px rgba(16,32,44,.16));
+    }
+    .thanks-card h3{margin:0 0 4px;font-size:24px;font-weight:800;color:var(--navy);font-family:"Plus Jakarta Sans",Inter,sans-serif}
+    .thanks-card p{margin:0;font-size:14px;font-weight:600;color:#6E8798}
     @media(max-width:900px){
       .thanks-team{grid-template-columns:repeat(2,minmax(0,180px))}
     }
@@ -4042,7 +4061,7 @@ html.is-time-tilt{
       const heading = main?.querySelector('h1');
       if (!main || !heading) return;
 
-      const title = heading.innerText.replace(/\s+/g, ' ').trim();
+      const title = heading.innerText.replace(/\s+/g, ' ').replace(/[.!?…]+$/, '').trim();
       const isClosing = [
         'CRÉDITO PAUSADO',
         'RUTA SEGURA INTERVIENE',
@@ -4050,7 +4069,7 @@ html.is-time-tilt{
         'EVALUACIÓN RETOMADA',
         'Cuando la operación sigue viva, ambos ganan.',
         'Gracias'
-      ].includes(title);
+      ].includes(title) || (typeof idx === 'number' && idx >= 13);
 
       slide.classList.toggle('closing-sequence', isClosing);
       if (!isClosing) return;
@@ -4475,7 +4494,7 @@ html.is-time-tilt{
 {stage:6,time:'9:36–9:44',k:'15 · CIERRE',body:`<div class="close-bank" style="text-align:center"><div class="press-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 26 32 12l22 14"/><path d="M14 28h36M16 50h32M12 54h40"/><path d="M20 30v18M29 30v18M35 30v18M44 30v18"/></svg></div><h1 style="font-size:clamp(56px,7vw,104px);line-height:.9;margin:0">EL BANCO<br><span style="color:var(--blue)">REINCORPORA</span></h1><p style="font-size:22px;color:var(--muted)">Recibe el expediente, valida la actualización y devuelve el caso al flujo.</p></div>`},
 {stage:6,time:'9:44–9:52',k:'15 · CIERRE',body:`<div class="close-ok" style="text-align:center"><div class="press-icon ok" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="m20 33 8 8 17-19"/></svg></div><h1 style="font-size:clamp(56px,7.2vw,110px);line-height:.9;margin:0;color:#1E9B43">EVALUACIÓN RETOMADA</h1><p style="font-size:22px;color:var(--muted)">La evaluación continúa con información correcta antes de perder vigencia.</p></div>`},
 {stage:6,time:'9:52–10:00',k:'15 · CIERRE',body:`<div class="close-win"><h1 style="text-align:center;font-size:52px;line-height:.95;margin:0 0 22px">Cuando la operación sigue viva,<br><span style="color:var(--blue)">ambos ganan.</span></h1><div class="story"><section class="storyPanel" style="text-align:center;background:#F1F8FF"><div class="press-icon bank" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 26 32 12l22 14"/><path d="M14 28h36M16 50h32M12 54h40"/><path d="M20 30v18M29 30v18M35 30v18M44 30v18"/></svg></div><h2 style="font-size:36px;margin:14px 0">Evaluación retomada</h2><p>El banco conserva una operación viable y reduce reprocesos evitables.</p></section><aside class="casebox" style="text-align:center;background:#F3FBF5;border-color:#CBECD4"><div class="press-icon house" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M12 30 32 13 52 30"/><path d="M20 28v22h24V28"/><rect x="28" y="36" width="8" height="14" rx="1.2"/></svg></div><h2 style="font-size:36px;margin:14px 0">Proyecto de vida en marcha</h2><p>Carolina puede continuar con su casa propia: el dato correcto llegó a tiempo.</p></aside></div><div class="callout" style="margin-top:14px;text-align:center"><b>Éxito =</b> mantener viva la operación + demostrar valor para el banco + reducir costo por caso al escalar.</div></div>`},
-{stage:6,time:'10:00',k:'16 · GRACIAS',body:`<div class="close-thanks"><h1>Gracias.</h1><div class="thanks-team"><article class="thanks-card cris"><img src="assets/team-cris.jpg" alt="Cris"><h3>Cris</h3><p>Hipótesis · Encuadre</p></article><article class="thanks-card vale"><img src="assets/team-vale.jpg" alt="Vale"><h3>Vale</h3><p>Evidencia · Oportunidad</p></article><article class="thanks-card erick"><img src="assets/team-erick.jpg" alt="Erick"><h3>Erick</h3><p>Prototipo · Modelo</p></article><article class="thanks-card tami"><img src="assets/team-tami.jpg" alt="Tami"><h3>Tami</h3><p>Negocio · Cierre</p></article></div></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=16;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){if(idx===slides.length-1)return 16;return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);const h='#'+(idx+1);if(location.hash!==h)location.hash=h}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{if(typeof introActive==='function'&&introActive())return;const n=parseInt(location.hash.slice(1),10);if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
+{stage:6,time:'10:00',k:'16 · GRACIAS',body:`<div class="close-thanks"><h1>Gracias.</h1><div class="thanks-team"><article class="thanks-card cris"><div class="thanks-avatar"><img src="assets/team-cris.png" alt="Cris"></div><h3>Cris</h3><p>Hipótesis · Encuadre</p></article><article class="thanks-card vale"><div class="thanks-avatar"><img src="assets/team-vale.png" alt="Vale"></div><h3>Vale</h3><p>Evidencia · Oportunidad</p></article><article class="thanks-card erick"><div class="thanks-avatar"><img src="assets/team-erick.png" alt="Erick"></div><h3>Erick</h3><p>Prototipo · Modelo</p></article><article class="thanks-card tami"><div class="thanks-avatar"><img src="assets/team-tami.png" alt="Tami"></div><h3>Tami</h3><p>Negocio · Cierre</p></article></div></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=16;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){if(idx===slides.length-1)return 16;return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);const h='#'+(idx+1);if(location.hash!==h)location.hash=h}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{if(typeof introActive==='function'&&introActive())return;const n=parseInt(location.hash.slice(1),10);if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
 const introStates=[...document.querySelectorAll('[data-intro]')];
 const introOrder=['dream','evaluation','problem','risk'];
 let introStep=0;
