@@ -258,6 +258,55 @@
   padding:5px 10px !important;
 }
 </style>
+
+<style id="topbar-layout">
+.slide > .top{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:18px !important;
+  min-height:36px;
+  width:100%;
+}
+.slide > .top .kicker{
+  flex:0 0 auto;
+  white-space:nowrap;
+  max-width:28%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.slide > .top .stagebar{
+  flex:1 1 auto;
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+.slide > .top .stage{
+  flex:0 0 auto;
+  white-space:nowrap;
+  padding:6px 10px;
+  font-size:8px;
+}
+.slide > .top .time{display:none !important}
+.slide > .top .top-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
+  margin-left:auto;
+}
+.present-who,
+.presentation-timer{
+  position:static !important;
+  top:auto !important;
+  right:auto !important;
+  transform:none !important;
+  z-index:2 !important;
+}
+</style>
 </head><body><div id="introSequence" class="intro-sequence" aria-hidden="false">
   <style id="typographic-weight-system">
     :root {
@@ -3826,6 +3875,15 @@
         el.classList.add('is-arming');
         el.classList.remove('reveals-ready');
         originalRender();
+        (function placeTopMeta(){
+          const top=el.querySelector('.top');
+          const who=document.getElementById('presentWho');
+          const timer=document.getElementById('presentTimer');
+          if(!top||!who||!timer)return;
+          let meta=top.querySelector('.top-meta');
+          if(!meta){meta=document.createElement('div');meta.className='top-meta';top.appendChild(meta);}
+          meta.append(who,timer);
+        })();
         prepareSlideReveals(revealAllOnRender);
         const armedGroups = revealGroups;
         const showAll = revealAllOnRender;
