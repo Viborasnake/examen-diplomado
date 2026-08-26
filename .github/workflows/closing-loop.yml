@@ -1,10 +1,7 @@
 name: Closing loop sequence
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/closing-loop.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write

@@ -1,8 +1,6 @@
 name: Fix KPI layout
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/fix-kpi-layout.yml']
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
