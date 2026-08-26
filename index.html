@@ -3080,33 +3080,23 @@
     }
 
     
-    .slide.is-arming .main,
-    .slide.is-arming .top,
-    .slide.is-arming .footer {
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-
     .reveal-item {
       opacity: 0;
       visibility: hidden;
-      transform: translateY(18px) scale(.985);
-      filter: blur(3px);
+      transform: translateY(14px);
       pointer-events: none;
       transition: none;
     }
 
-    .slide.reveals-ready .reveal-item.reveal-visible {
+    .reveal-item.reveal-visible {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
+      transform: none;
       pointer-events: auto;
-      transition:
-        opacity .42s ease,
-        transform .52s cubic-bezier(.2,.75,.25,1),
-        filter .38s ease,
-        visibility 0s linear;
+    }
+
+    .slide.reveals-ready .reveal-item.reveal-visible {
+      transition: opacity .4s ease, transform .45s cubic-bezier(.2,.75,.25,1);
     }
 
     .reveal-item.reveal-just-entered {
@@ -3858,6 +3848,7 @@
         }
 
         updateSpeakerCount();
+        if (revealGroups.length) revealGroup(0, false);
       }
 
       function playSlideEntry(direction) {
@@ -3872,8 +3863,7 @@
 
       render = function enhancedRender() {
         const direction = idx < lastRenderedIndex ? -1 : 1;
-        el.classList.add('is-arming');
-        el.classList.remove('reveals-ready');
+        el.classList.remove('is-arming','reveals-ready');
         originalRender();
         (function placeTopMeta(){
           const top=el.querySelector('.top');
@@ -3885,23 +3875,9 @@
           meta.append(who,timer);
         })();
         prepareSlideReveals(revealAllOnRender);
-        const armedGroups = revealGroups;
-        const showAll = revealAllOnRender;
         revealAllOnRender = false;
         lastRenderedIndex = idx;
-        if (!armedGroups.length) {
-          el.classList.remove('is-arming');
-          playSlideEntry(direction);
-          return;
-        }
-        requestAnimationFrame(() => {
-          el.classList.remove('is-arming');
-          requestAnimationFrame(() => {
-            el.classList.add('reveals-ready');
-            if (showAll) armedGroups.forEach((_, i) => revealGroup(i, false));
-            else revealGroup(0, false);
-          });
-        });
+        requestAnimationFrame(() => el.classList.add('reveals-ready'));
       };
 
       const closingStart = 13;
