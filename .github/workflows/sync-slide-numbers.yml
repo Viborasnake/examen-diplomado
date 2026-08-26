@@ -1,0 +1,85 @@
+name: Sync presentation and speaker numbers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-slide-numbers.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Align slide numbering
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old_kicker = '<div class="kicker">${s.k}</div>'
+          new_kicker = '<div class="kicker">${String(idx+1).padStart(2,\'0\')} · ${s.k.replace(/^\\d+\\s*·\\s*/,\'\')}</div>'
+          if old_kicker not in s:
+              raise SystemExit('Presentation kicker pattern not found')
+          s = s.replace(old_kicker, new_kicker, 1)
+
+          old_footer = '<span>${idx+1} / ${slides.length}</span>'
+          new_footer = '<span>${String(idx+1).padStart(2,\'0\')} / ${String(slides.length).padStart(2,\'0\')}</span>'
+          if old_footer not in s:
+              raise SystemExit('Presentation footer count pattern not found')
+          s = s.replace(old_footer, new_footer, 1)
+
+          old_count = 'count.textContent=`${idx+1}/${slides.length}`'
+          new_count = 'count.textContent=`${String(idx+1).padStart(2,\'0\')}/${String(slides.length).padStart(2,\'0\')}`'
+          if old_count not in s:
+              raise SystemExit('Presentation controller count pattern not found')
+          s = s.replace(old_count, new_count, 1)
+
+          old_intro_count = "count.textContent=(introStep+1)+'/7'"
+          new_intro_count = "count.textContent='00 · '+(introStep+1)+'/7'"
+          if old_intro_count not in s:
+              raise SystemExit('Intro count pattern not found')
+          s = s.replace(old_intro_count, new_intro_count, 1)
+
+          p.write_text(s, encoding='utf-8')
+
+          sp = Path('speaker.html')
+          t = sp.read_text(encoding='utf-8')
+
+          old_timeline = '<a href="#s18">18</a></nav>'
+          new_timeline = '<a href="#s18">18</a><a href="#s19">19</a></nav>'
+          if old_timeline not in t:
+              raise SystemExit('Speaker timeline pattern not found')
+          t = t.replace(old_timeline, new_timeline, 1)
+
+          region = re.compile(r'<article class="card" id="s17".*?</article>\s*<article class="card" id="s18".*?</article>', re.S)
+          replacement = '''<article class="card" id="s17"><aside class="side"><div class="num">17</div><div class="time">9:36–9:44</div></aside><div><h2 class="title">El banco reincorpora</h2><div class="script"><p>El banco recibe el expediente trazable, valida la actualización y devuelve el caso al flujo de evaluación.</p></div></div></article>
+    <article class="card" id="s18"><aside class="side"><div class="num">18</div><div class="time">9:44–9:52</div></aside><div><h2 class="title">Crédito validado</h2><div class="script"><p>Con la información correcta disponible antes del vencimiento, la evaluación puede continuar y la operación vuelve a estar activa.</p></div></div></article>
+    <article class="card" id="s19"><aside class="side"><div class="num">19</div><div class="time">9:52–10:00</div></aside><div><h2 class="title">Cuando la operación sigue viva, ambos ganan</h2><div class="script"><p>El banco conserva una colocación viable; Carolina obtiene el crédito para su proyecto de vida.</p><p><b>Éxito:</b> mantener viva la operación, demostrar valor para el banco y reducir costo por caso al escalar. Gracias.</p></div></div></article>'''
+          t, n = region.subn(replacement, t, count=1)
+          if n != 1:
+              raise SystemExit(f'Speaker closing region not found: {n}')
+
+          sp.write_text(t, encoding='utf-8')
+          Path('.github/workflows/sync-slide-numbers.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit synchronized numbering
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Sincroniza numeración de presentación y speaker"
+          git push
