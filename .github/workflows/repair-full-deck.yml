@@ -29,43 +29,56 @@ jobs:
           from pathlib import Path
           import re
 
-          # PRESENTATION: remove only the target JS slide and keep all following slides.
+          # PRESENTATION: restore the last known-good full deck and remove ONLY this slide.
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          start_marker = ",{stage:5,time:'6:40–7:05',k:'09 · POR QUÉ RUTA SEGURA'"
-          next_marker = "{stage:5,time:'7:05–7:30',k:'10 · MODELO DE MONETIZACIÓN'"
-          start = s.find(start_marker)
-          end = s.find(next_marker, start + 1) if start != -1 else -1
-          if start == -1 or end == -1:
-              raise SystemExit('No se pudo localizar de forma segura la slide Por qué Ruta Segura')
+          target = "title:'¿Por qué este producto y no otro?'"
+          nxt = "title:'B2B2C: Carolina usa; el banco paga'"
+          pos = s.find(target)
+          if pos == -1:
+              raise SystemExit('No se encontró la slide objetivo en el deck restaurado')
+          start = s.rfind(',{stage:', 0, pos)
+          end_title = s.find(nxt, pos)
+          if start == -1 or end_title == -1:
+              raise SystemExit('No se pudieron determinar límites seguros para quitar la slide objetivo')
+          end = s.rfind('{stage:', pos, end_title)
+          if end == -1:
+              raise SystemExit('No se encontró inicio de la slide siguiente')
           s = s[:start] + ',' + s[end:]
 
-          # Renumber visible main-slide kickers 01..N without touching intro micro-slides.
-          n = 0
+          # Renumber all main slide kickers in actual order.
+          counter = {'n': 0}
           def renum_k(m):
-              nonlocal_dummy = None
-              global n
-              n += 1
+              counter['n'] += 1
               label = re.sub(r'^\d+\s*·\s*', '', m.group(1))
-              return "k:'%02d · %s'" % (n, label)
+              return "k:'%02d · %s'" % (counter['n'], label)
           s = re.sub(r"k:'([^']*)'", renum_k, s)
 
-          # Sanity checks: full deck must contain late slides and valid delimiter after EXPERIENCIA.
-          required = ['MODELO DE MONETIZACIÓN','CÓMO SABREMOS QUE FUNCIONA','VALOR PARA EL BANCO','PILOTO Y ESCALA','CRÉDITO PAUSADO','RUTA SEGURA INTERVIENE','CRÉDITO VALIDADO']
+          required = [
+              'MODELO DE MONETIZACIÓN',
+              'CÓMO SABREMOS QUE FUNCIONA',
+              'VALOR PARA EL BANCO',
+              'PILOTO Y ESCALA',
+              'CRÉDITO PAUSADO',
+              'Ruta Segura interviene',
+              'CRÉDITO VALIDADO',
+              'Cuando la operación sigue viva, ambos ganan'
+          ]
           for token in required:
               if token not in s:
                   raise SystemExit(f'Falta slide requerida en presentación: {token}')
-          if "EXPERIENCIA',title:'Menos fricción, sin crear otro silo'" not in s:
-              raise SystemExit('Falta slide Experiencia')
+          if target in s:
+              raise SystemExit('La slide objetivo todavía está presente')
           p.write_text(s, encoding='utf-8')
 
-          # SPEAKER: restore full notes, remove only matching article, then renumber 00..N.
+          # SPEAKER: restore full notes, remove only exact article and renumber 00..N.
           sp = Path('speaker.html')
           t = sp.read_text(encoding='utf-8')
           card_re = re.compile(r'<article class="card"\s+id="s\d+".*?</article>', re.S)
-          cards = card_re.findall(t)
+          matches = list(card_re.finditer(t))
+          cards = [m.group(0) for m in matches]
           if len(cards) < 15:
-              raise SystemExit(f'Speaker restaurado incompleto antes de filtrar: {len(cards)} cards')
+              raise SystemExit(f'Speaker restaurado incompleto: {len(cards)} cards')
 
           kept = []
           removed = 0
@@ -75,7 +88,7 @@ jobs:
                   continue
               kept.append(card)
           if removed != 1:
-              raise SystemExit(f'Se esperaba quitar 1 card Por qué Ruta Segura; se quitaron {removed}')
+              raise SystemExit(f'Se esperaba quitar exactamente 1 card; se quitaron {removed}')
 
           rebuilt = []
           for i, card in enumerate(kept):
@@ -84,24 +97,31 @@ jobs:
               card = re.sub(r'<div class="time">.*?</div>', '', card, flags=re.S)
               rebuilt.append(card)
 
-          first = card_re.search(t)
-          all_matches = list(card_re.finditer(t))
-          if not first or not all_matches:
-              raise SystemExit('No se encontraron cards en speaker')
-          prefix = t[:first.start()]
-          suffix = t[all_matches[-1].end():]
+          prefix = t[:matches[0].start()]
+          suffix = t[matches[-1].end():]
           timeline = '<nav class="timeline" aria-label="Ir a una sección">' + ''.join(f'<a href="#s{i}">{i:02d}</a>' for i in range(len(rebuilt))) + '</nav>'
           prefix = re.sub(r'<nav class="timeline" aria-label="Ir a una sección">.*?</nav>', timeline, prefix, count=1, flags=re.S)
           t = prefix + '\n\n'.join(rebuilt) + suffix
 
-          # Speaker should contain the whole narrative, not just the tail.
-          required_speaker = ['No partimos con Carolina. La encontramos','Supuestos que podían hacer caer la oportunidad','Prototipo: del relato al reingreso','Modelo de monetización B2B2C','Outcome, North Star y KPIs','Cuando la operación sigue viva, ambos ganan']
+          required_speaker = [
+              'Del sueño de la casa propia a una operación en riesgo',
+              'No partimos con Carolina. La encontramos',
+              'Supuestos que podían hacer caer la oportunidad',
+              'Prototipo: del relato al reingreso',
+              'Menos fricción, sin crear otro silo',
+              'Quién usa y quién paga',
+              'Modelo de monetización B2B2C',
+              'Outcome, North Star y KPIs',
+              'Piloto y condición de escala',
+              'Cuando la operación sigue viva, ambos ganan'
+          ]
           for token in required_speaker:
               if token not in t:
                   raise SystemExit(f'Falta sección requerida en speaker: {token}')
+          if '¿Por qué Ruta Segura?</h2>' in t:
+              raise SystemExit('La card eliminada sigue en speaker')
           sp.write_text(t, encoding='utf-8')
 
-          # Remove this temporary workflow after successful repair.
           Path('.github/workflows/repair-full-deck.yml').unlink(missing_ok=True)
           PY
 
