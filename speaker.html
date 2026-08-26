@@ -22,6 +22,7 @@
 .timeline a.who-vale{border-color:#b7e3c4;color:#1E9B43}
 .timeline a.who-erick{border-color:#f0d39a;color:#A56B12}
 .timeline a.who-tami{border-color:#cfc6f2;color:#6B5BD6}
+body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify-content:center}.auto-scroll-button{min-width:124px!important}.auto-scroll-button .pause-icon{letter-spacing:-.16em;margin-right:5px}
 </style>
 </head>
 <body>
@@ -71,6 +72,61 @@
     </section>
 <div class="footer">Ruta Segura · Guion de speaker sincronizado con la presentación</div>
 </main>
+
+<aside class="controller" aria-label="Control de desplazamiento automático">
+  <div class="navgroup"><button id="autoScroll" class="primary auto-scroll-button" type="button" aria-pressed="false">▶ Play</button></div>
+</aside>
+
+<script>
+(() => {
+  const control = document.getElementById('autoScroll');
+  const speed = 26;
+  let playing = false;
+  let animationFrame = 0;
+  let lastFrame = 0;
+  let previousScrollBehavior = '';
+
+  function updateControl() {
+    control.setAttribute('aria-pressed', String(playing));
+    control.innerHTML = playing ? '<span class="pause-icon">❚❚</span> Pausa' : '▶ Play';
+  }
+
+  function stop() {
+    playing = false;
+    cancelAnimationFrame(animationFrame);
+    document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    updateControl();
+  }
+
+  function scrollStep(now) {
+    if (!playing) return;
+    const maximum = document.documentElement.scrollHeight - window.innerHeight;
+    if (maximum <= 0 || window.scrollY >= maximum - 1) {
+      stop();
+      return;
+    }
+    const elapsed = Math.min(80, now - lastFrame);
+    lastFrame = now;
+    window.scrollTo(0, Math.min(maximum, window.scrollY + speed * elapsed / 1000));
+    animationFrame = requestAnimationFrame(scrollStep);
+  }
+
+  function start() {
+    const maximum = document.documentElement.scrollHeight - window.innerHeight;
+    if (window.scrollY >= maximum - 1) window.scrollTo(0, 0);
+    previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    playing = true;
+    lastFrame = performance.now();
+    updateControl();
+    animationFrame = requestAnimationFrame(scrollStep);
+  }
+
+  control.addEventListener('click', () => playing ? stop() : start());
+  document.addEventListener('visibilitychange', () => { if (document.hidden && playing) stop(); });
+  updateControl();
+})();
+</script>
 
 </body>
 </html>
