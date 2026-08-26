@@ -48,32 +48,55 @@
     
     .slide.closing-sequence{
       padding:0!important;
+      display:grid!important;
+      grid-template-rows:1fr!important;
+      grid-template-columns:1fr!important;
+      height:100dvh!important;
+      min-height:100dvh!important;
+      place-items:stretch!important;
     }
     .slide.closing-sequence:has(.close-paused){background:#C62828!important}
     .slide.closing-sequence:has(.close-route){background:#F4F9FE!important}
     .slide.closing-sequence:has(.close-bank){background:#F1F8FF!important}
     .slide.closing-sequence:has(.close-ok){background:#F3FBF5!important}
     .slide.closing-sequence:has(.close-win){background:#fff!important}
+    .slide.closing-sequence:has(.close-thanks){background:#fff!important}
     .slide.closing-sequence .top,
     .slide.closing-sequence .footer,
     .slide.closing-sequence .top-meta{
       display:none!important;
     }
     .slide.closing-sequence .main{
-      min-height:100%!important;
+      min-height:100dvh!important;
+      height:100%!important;
       padding:0!important;
+      display:grid!important;
       grid-template-rows:1fr!important;
       align-content:stretch!important;
       align-items:stretch!important;
+      place-items:stretch!important;
     }
     .slide.closing-sequence .main > :last-child,
     .slide.closing-sequence .main > div{
       align-self:stretch!important;
       width:100%;
+      height:100%!important;
       min-height:100%!important;
       display:grid;
       place-content:center;
+      place-items:center;
       padding:8vh 8vw;
+      box-sizing:border-box;
+    }
+    .close-paused,.close-route,.close-bank,.close-ok,.close-win,.close-thanks{
+      width:100%;
+      height:100%;
+      min-height:100%;
+      display:grid;
+      place-content:center;
+      place-items:center;
+      text-align:center;
+      box-sizing:border-box;
     }
     .close-paused{background:#C62828;color:#fff}
     .close-paused h1{color:#fff!important}
@@ -82,7 +105,11 @@
     .close-bank{background:#F1F8FF}
     .close-ok{background:#F3FBF5}
     .close-ok h1{color:#1E9B43!important}
-    .close-win{background:#fff;place-content:center}
+    .close-win{background:#fff}
+    .close-thanks{background:#fff}
+    .close-thanks h1{font-size:clamp(72px,9vw,148px);line-height:.88;letter-spacing:-.065em;margin:0;font-weight:900}
+    .close-thanks .thanks-names{margin:32px 0 0;font-size:clamp(18px,1.7vw,28px);font-weight:800;color:var(--navy);letter-spacing:.01em}
+    .close-thanks .thanks-program{margin:12px 0 0;max-width:720px;font-size:clamp(13px,1.1vw,18px);font-weight:600;color:var(--muted);line-height:1.45}
 @keyframes beatIn {
   from { opacity: 0; transform: translateY(12px) scale(.985); }
   to { opacity: 1; transform: none; }
@@ -111,7 +138,8 @@
 .close-route > *,
 .close-bank > *,
 .close-ok > *,
-.close-win > * {
+.close-win > *,
+.close-thanks > * {
   opacity: 0;
   animation: beatIn .48s ease forwards;
 }
@@ -119,18 +147,22 @@
 .close-route > *:nth-child(1),
 .close-bank > *:nth-child(1),
 .close-ok > *:nth-child(1),
-.close-win > *:nth-child(1) { animation-delay: .06s; }
+.close-win > *:nth-child(1),
+.close-thanks > *:nth-child(1) { animation-delay: .06s; }
 .close-paused > *:nth-child(2),
 .close-route > *:nth-child(2),
 .close-bank > *:nth-child(2),
 .close-ok > *:nth-child(2),
-.close-win > *:nth-child(2) { animation-delay: .2s; }
+.close-win > *:nth-child(2),
+.close-thanks > *:nth-child(2) { animation-delay: .2s; }
 .close-paused > *:nth-child(3),
 .close-route > *:nth-child(3),
 .close-bank > *:nth-child(3),
 .close-ok > *:nth-child(3),
-.close-win > *:nth-child(3) { animation-delay: .34s; }
-.close-win > *:nth-child(4) { animation-delay: .48s; }
+.close-win > *:nth-child(3),
+.close-thanks > *:nth-child(3) { animation-delay: .34s; }
+.close-win > *:nth-child(4),
+.close-thanks > *:nth-child(4) { animation-delay: .48s; }
 @media (prefers-reduced-motion: reduce) {
   .intro-state.active .intro-icon,
   .intro-state.active .intro-kicker,
@@ -145,7 +177,8 @@
   .close-route > *,
   .close-bank > *,
   .close-ok > *,
-  .close-win > * {
+  .close-win > *,
+  .close-thanks > * {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -758,7 +791,130 @@ html.is-time-tilt{
     }
 
 
-    .hero-app-screen{overflow:hidden!important;background:#f3f7fb!important;border-radius:29px!important}
+    .hero-app-screen{overflow:hidden!important;background:#f3f7fb!important;border-radius:29px!important;position:relative}
+
+    .rs-kb{
+      position:absolute;
+      left:0;right:0;bottom:0;
+      z-index:8;
+      padding:.4em .38em 1.15em;
+      background:linear-gradient(180deg,#dfe6ec,#d4dbe3);
+      border-radius:0 0 1.7em 1.7em;
+      box-shadow:0 -10px 28px #20384a22;
+      transform:translateY(110%);
+      opacity:0;
+      pointer-events:none;
+      transition:transform .45s cubic-bezier(.2,.75,.25,1),opacity .28s ease;
+    }
+    .kb-open .rs-kb{transform:translateY(0);opacity:1}
+    .rs-kb.out{transform:translateY(110%);opacity:0}
+    .kb-open .rs-cta,.kb-open .rs-actions{opacity:0!important}
+    .rs-composer{
+      min-height:2.15em;
+      margin:0 .18em .42em;
+      padding:.48em .7em;
+      border-radius:1.15em;
+      background:#fff;
+      color:#1f2933;
+      font-size:.84em;
+      line-height:1.3;
+      box-shadow:0 .2em .5em #20384a14;
+    }
+    .rs-typed:empty:before{content:"Escribe tu respuesta…";color:#91a3b0}
+    .rs-caret{
+      display:inline-block;
+      width:.08em;height:.95em;
+      margin-left:.12em;
+      background:var(--blue);
+      vertical-align:-.12em;
+      animation:chatCaret .7s steps(1) infinite;
+    }
+    .rs-key-row{display:flex;gap:.18em;justify-content:center;margin:.16em .1em 0}
+    .rs-key{
+      flex:1;
+      max-width:2.2em;
+      height:2.2em;
+      display:grid;place-items:center;
+      border-radius:.38em;
+      background:#fff;
+      color:#314555;
+      font-size:.72em;font-weight:700;
+      box-shadow:0 .12em 0 #8b97a2;
+      text-transform:uppercase;
+    }
+    .rs-key.util{max-width:3em;background:#c5ced6;font-size:.78em}
+    .rs-key.space{max-width:none;flex:4.6;text-transform:none;font-size:.62em;letter-spacing:.04em;color:#5b7080}
+    .rs-key.send{max-width:none;flex:1.7;background:var(--blue);color:#fff;box-shadow:0 .12em 0 #2d6eaf}
+    .rs-key.flash{background:#b7c9d6;transform:translateY(.08em);box-shadow:none}
+    .rs-key.send.flash{background:#2d7fc8}
+
+    .node.value,.phase.value,.delta article.value{
+      background:#F1F8FF!important;
+      border-color:#BFD9F3!important;
+      box-shadow:0 14px 34px #3F8CD51A, inset 0 4px 0 var(--blue);
+    }
+    .node.value small,.delta article.value small,.phase.value small{color:var(--blue)!important}
+    .node.value b,.delta article.value b,.phase.value b{color:var(--blue)!important}
+    .value-tag{
+      display:inline-block;
+      margin-top:auto;
+      align-self:flex-start;
+      background:var(--blue);
+      color:#fff;
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      border-radius:99px;
+      padding:5px 9px;
+    }
+    .node.value .value-tag{margin-top:12px}
+    .delta article.value{display:flex;flex-direction:column}
+    .delta article.value .value-tag{margin-top:10px}
+    .jrow.good .phase.value{
+      background:#E8F3FD!important;
+      border-color:#9FC8EA!important;
+    }
+
+    .pilotbox .measure{
+      gap:12px!important;
+      margin-top:20px;
+    }
+    .pilotbox .measure article{
+      min-height:176px;
+      padding:20px 18px 16px!important;
+      font-size:14px!important;
+      line-height:1.35!important;
+      border:1px solid #CFE2F6!important;
+      background:#fff!important;
+      border-radius:18px!important;
+      box-shadow:0 12px 28px #20384a10;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .pilotbox .measure article strong{
+      font-size:clamp(32px,2.8vw,44px)!important;
+      color:var(--blue)!important;
+      letter-spacing:-.045em;
+      line-height:.9;
+      margin:0 0 4px!important;
+    }
+    .pilotbox .measure article b{
+      display:block;
+      font-size:clamp(17px,1.55vw,24px)!important;
+      line-height:1.12;
+      color:var(--navy)!important;
+      margin:0 0 4px;
+    }
+    .pilotbox .measure article p{
+      margin:0;
+      color:#526d7e!important;
+      font-size:13px!important;
+      line-height:1.4!important;
+      font-weight:500;
+    }
+    .pilotbox h2{font-size:clamp(28px,2.4vw,36px)!important;margin:0 0 4px}
     .hero-phone-shell .prototype-flow{background:#f3f7fb;position:absolute;inset:0;overflow:hidden}
     .hero-phone-shell .prototype-screen{padding:0!important;overflow:hidden!important;background:#f3f7fb;position:absolute!important;inset:0!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:none!important;z-index:1}
     .hero-phone-shell .prototype-screen.proto-active{opacity:1!important;visibility:visible!important;pointer-events:auto!important;z-index:3}
@@ -3274,51 +3430,117 @@ html.is-time-tilt{
       el.classList.add('rs-anim-show');
     }
 
-    function startPrototypeChatAnimation(phone) {
+    function chatHost(root) {
+      return root.closest('.hero-app-screen')
+        || root.querySelector('.screen')
+        || root.closest('.screen')
+        || root;
+    }
+
+    function mountRsKeyboard(host) {
+      let kb = host.querySelector('.rs-kb');
+      if (kb) return kb;
+      kb = document.createElement('div');
+      kb.className = 'rs-kb';
+      kb.setAttribute('aria-hidden', 'true');
+      const key = (label, cls = '', k = label) =>
+        `<span class="rs-key ${cls}" data-k="${k}">${label}</span>`;
+      kb.innerHTML = `
+        <div class="rs-composer"><span class="rs-typed"></span><i class="rs-caret"></i></div>
+        <div class="rs-key-row">${[...'qwertyuiop'].map(c => key(c)).join('')}</div>
+        <div class="rs-key-row">${[...'asdfghjkl'].map(c => key(c)).join('')}</div>
+        <div class="rs-key-row">${key('⇧','util','shift')}${[...'zxcvbnm'].map(c => key(c)).join('')}${key('⌫','util','del')}</div>
+        <div class="rs-key-row">${key('123','util','num')}${key('espacio','space',' ')}${key('↵','send','send')}</div>`;
+      host.appendChild(kb);
+      return kb;
+    }
+
+    function flashKey(kb, ch) {
+      const raw = ch.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const sel = raw === ' ' ? '.rs-key.space' : `.rs-key[data-k="${raw}"]`;
+      const key = kb.querySelector(sel);
+      if (!key) return;
+      key.classList.add('flash');
+      setTimeout(() => key.classList.remove('flash'), 90);
+    }
+
+    function startPrototypeChatAnimation(phone, options = {}) {
       if (!phone || phone.dataset.chatAnimated) return;
       phone.dataset.chatAnimated = 'true';
       const chat = phone.querySelector('.rs-chat');
       const cta = phone.querySelector('.rs-cta');
-      if (!chat) return;
+      if (!chat) {
+        options.onDone?.();
+        return;
+      }
       const items = [...chat.children];
-      if (items.length < 2) return;
+      if (items.length < 2) {
+        options.onDone?.();
+        return;
+      }
 
+      const followUp = options.followUp !== false;
+      const host = chatHost(phone);
+      const user = items[1];
+      const full = user.textContent.trim();
       items.slice(1).forEach(el => el.classList.add('rs-anim-hide'));
       cta?.classList.add('rs-anim-hide');
 
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        items.slice(0, 3).forEach(showRs);
-        showRs(cta);
+        showRs(user);
+        if (followUp) {
+          items.slice(0, 3).forEach(showRs);
+          showRs(cta);
+        }
+        options.onDone?.();
         return;
       }
 
-      const user = items[1];
-      const full = user.textContent.trim();
-      user.textContent = '';
-      showRs(user);
-
-      const think = document.createElement('div');
-      think.className = 'rs-think';
-      think.setAttribute('aria-hidden', 'true');
-      think.innerHTML = '<i></i><i></i><i></i>';
+      const kb = mountRsKeyboard(host);
+      const typed = kb.querySelector('.rs-typed');
+      const sendKey = kb.querySelector('.rs-key.send');
+      host.classList.add('kb-open');
 
       let n = 0;
+      function finishTyping() {
+        sendKey?.classList.add('flash');
+        schedulePhoneAnimation(phone, 180, () => {
+          sendKey?.classList.remove('flash');
+          user.textContent = full;
+          showRs(user);
+          kb.classList.add('out');
+          host.classList.remove('kb-open');
+        });
+        schedulePhoneAnimation(phone, 620, () => kb.remove());
+        if (followUp) {
+          const think = document.createElement('div');
+          think.className = 'rs-think';
+          think.setAttribute('aria-hidden', 'true');
+          think.innerHTML = '<i></i><i></i><i></i>';
+          schedulePhoneAnimation(phone, 720, () => user.after(think));
+          schedulePhoneAnimation(phone, 1240, () => {
+            think.remove();
+            showRs(items[2]);
+          });
+          schedulePhoneAnimation(phone, 1680, () => showRs(cta));
+        }
+        schedulePhoneAnimation(phone, followUp ? 1800 : 780, () => options.onDone?.());
+      }
+
       function type() {
         if (!phone.isConnected) return;
         n += 1;
-        user.textContent = full.slice(0, n);
+        typed.textContent = full.slice(0, n);
+        flashKey(kb, full[n - 1] || '');
         if (n < full.length) {
-          setTimeout(type, 18);
+          const ch = full[n - 1];
+          setTimeout(type, ch === ' ' ? 42 : 16);
           return;
         }
-        user.after(think);
-        schedulePhoneAnimation(phone, 520, () => {
-          think.remove();
-          showRs(items[2]);
-        });
-        schedulePhoneAnimation(phone, 980, () => showRs(cta));
+        finishTyping();
       }
-      schedulePhoneAnimation(phone, 420, type);
+
+      schedulePhoneAnimation(phone, 380, type);
     }
 
     function enhancePrototypeRoute() {
@@ -3670,7 +3892,7 @@ html.is-time-tilt{
       if (!screens.length) return;
 
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const timings = reducedMotion ? [] : [2800, 2600, 2400, 2800];
+      const timings = reducedMotion ? [] : [900, 2600, 2400, 2800];
       let activeScreen = reducedMotion ? screens.length - 1 : 0;
 
       function showScreen(nextIndex) {
@@ -3681,16 +3903,22 @@ html.is-time-tilt{
         activeScreen = nextIndex;
       }
 
+      function startRest() {
+        let elapsed = 0;
+        timings.forEach((delay, timingIndex) => {
+          elapsed += delay;
+          setTimeout(() => {
+            if (!card.isConnected) return;
+            showScreen(timingIndex + 1);
+          }, elapsed);
+        });
+      }
+
       showScreen(activeScreen);
       if (reducedMotion) return;
-
-      let elapsed = 0;
-      timings.forEach((delay, timingIndex) => {
-        elapsed += delay;
-        setTimeout(() => {
-          if (!card.isConnected) return;
-          showScreen(timingIndex + 1);
-        }, elapsed);
+      startPrototypeChatAnimation(screens[0], {
+        followUp: false,
+        onDone: startRest
       });
     }
 
@@ -3723,7 +3951,8 @@ html.is-time-tilt{
         'RUTA SEGURA INTERVIENE',
         'EL BANCO REINCORPORA',
         'EVALUACIÓN RETOMADA',
-        'Cuando la operación sigue viva, ambos ganan.'
+        'Cuando la operación sigue viva, ambos ganan.',
+        'Gracias'
       ].includes(title);
 
       slide.classList.toggle('closing-sequence', isClosing);
@@ -3826,7 +4055,7 @@ html.is-time-tilt{
       phones.forEach((phone, index) => {
         if (phone.classList.contains('reveal-item') && !phone.classList.contains('reveal-visible')) return;
         if (index > 0 && !phone.classList.contains('reveal-visible')) return;
-        if (index === 0) startPrototypeChatAnimation(phone);
+        if (index === 0) startPrototypeChatAnimation(phone, { followUp: true });
         if (index === 1) startPrototypeReviewAnimation(phone);
         if (index === 2) startPrototypeSuccessAnimation(phone);
         if (index === 3) startPrototypeStatusAnimation(phone);
@@ -3907,6 +4136,7 @@ html.is-time-tilt{
           '.pilot > .pricing .price:nth-child(3)',
           '.pilot > .pilotbox'
         ],
+        [],
         [],
         [],
         [],
@@ -4139,15 +4369,16 @@ html.is-time-tilt{
       </div>
     </div>
   </section>
-</div><main class="deck"><article id="slide" class="slide"></article></main><div id="presentWho" class="present-who" aria-label="Quien presenta">Cris</div><div id="presentTimer" class="presentation-timer" aria-label="Tiempo restante">10:00</div><nav class="controls"><button id="prev">←</button><span class="progress"><i id="bar"></i></span><span id="count" class="count"></span><button id="next">→</button><button id="reset" title="Reiniciar presentación" aria-label="Reiniciar presentación">↺</button><button id="full">⛶</button></nav><script>const stages=['Hipótesis','Opportunity Brief','Supuestos','Evidencia','Propuesta de valor','Modelo','Piloto'];const slides=[{stage:0,time:'0:00–0:30',k:'01 · RUTA SEGURA · PITCH v0.5',body:`<div class="hero"><div class="hero-copy"><h1>No partimos con Carolina.<br><span>La encontramos.</span></h1><p>Partimos investigando control de datos personales. Al buscar cuándo ese problema genera una consecuencia real, llegamos a un momento crítico: una evaluación hipotecaria bloqueada por información incorrecta, desactualizada o difícil de rastrear.</p></div><div><div class="logoCard"><div class="logoLock"><div class="logoIcon">♢</div><div class="logoWord">ruta<span>segura</span></div></div></div></div></div>`},{stage:1,time:'0:30–1:15',k:'02 · DE LA HIPÓTESIS AL FOCO',title:'De una hipótesis amplia a un momento <span>crítico</span>',body:`<div class="focusRedesign"><div class="focusSteps"><article class="focusStep"><small>01 · HIPÓTESIS INICIAL</small><strong>Control de datos personales</strong><p>Partimos explorando una necesidad amplia: entender y ejercer control sobre los datos.</p></article><div class="focusArrow">→</div><article class="focusStep mid"><small>02 · PRIMER RECORTE</small><strong>Banca</strong><p>Buscamos un contexto donde una inconsistencia pudiera afectar una decisión concreta.</p></article><div class="focusArrow">→</div><article class="focusStep final"><small>03 · SEGMENTO FINAL</small><strong>Hipotecarios bloqueados por una inconsistencia</strong><p>El dato deja de ser abstracto cuando puede detener una operación viable.</p></article></div><div class="focusInsight">No buscamos cualquier problema de datos. <b>Buscamos el momento en que un dato incorrecto cambia una decisión real.</b></div></div>`},{stage:2,time:'1:15–1:35',k:'03 · SUPUESTOS QUE PODÍAN HACER CAER EL CASO',title:'Antes de construir, explicitamos qué tenía que ser <span>cierto</span>',body:`<div class="evidence"><div class="column"><h2>Problema y persona</h2><div class="item"><strong>01</strong><p><b>Frecuencia.</b> Que la inconsistencia ocurra con suficiente relevancia en procesos hipotecarios.</p></div><div class="item"><strong>02</strong><p><b>Urgencia.</b> Que la persona actúe cuando el dato pone en riesgo una operación concreta.</p></div><div class="item"><strong>03</strong><p><b>Confianza.</b> Que acepte apoyo de un tercero con autorización expresa y mínimo de datos.</p></div></div><div class="column blue"><h2>Banco y negocio</h2><div class="item"><strong>04</strong><p><b>Reingreso.</b> Que el banco acepte un expediente coordinado y trazable para retomar la evaluación.</p></div><div class="item"><strong>05</strong><p><b>Pago.</b> Que exista un dueño interno y disposición a pagar por continuidad, eficiencia y trazabilidad.</p></div></div><div class="question"><b>Regla:</b> la evidencia tensiona estos supuestos; lo que siga abierto pasa al piloto.</div></div>`},{stage:3,time:'1:35–2:05',k:'04 · ALLÍ NACE CAROLINA',title:'La operación sigue <span>corriendo</span> mientras el dato se corrige',body:`<div class="story"><section class="storyPanel"><h2>Una vivienda viable.<br>Una deuda ya pagada.<br>Una evaluación detenida.</h2><p>Carolina consulta a la institución que informó la deuda, revisa el registro y vuelve al banco. Cada actor resuelve una parte, pero ella no encuentra un hilo que confirme que la corrección llegó al evaluador antes de que venza la operación.</p></section><aside class="casebox"><small>EL JOB REAL</small><strong>01</strong><p>operación que debe mantenerse viva mientras el dato se corrige entre distintos actores.</p><div class="goal">Carolina no quiere “corregir un dato”. Quiere ser evaluada con información correcta antes de que su operación pierda vigencia.</div></aside></div>`},{stage:3,time:'2:05–3:15',k:'05 · EVIDENCIA Y VACÍOS',title:'La evidencia sostiene la <span>oportunidad</span>, no el negocio',body:`<div class="evidence"><div class="column"><h2>Lo que sí sostiene</h2><div class="item"><strong>249k</strong><p>Reportes con saldos desactualizados y registros ambiguos.</p></div><div class="item"><strong>1.700</strong><p>Postulantes hipotecarios con diferencias entre registros para una misma persona.</p></div><div class="item"><strong>2026</strong><p>REDEC y Ley 21.719 cambian el contexto y vuelven oportuno investigar.</p></div></div><div class="column blue"><h2>Lo que debe probar el piloto</h2><div class="item"><strong>01</strong><p>Incidencia actual del problema en hipotecarios en Chile.</p></div><div class="item"><strong>02</strong><p>Dónde persiste el quiebre entre corrección y reingreso.</p></div><div class="item"><strong>03</strong><p>Aceptación, esfuerzo operativo, dueño interno y disposición a pagar.</p></div></div><div class="question"><b>Pregunta central:</b> ¿persiste una brecha relevante entre corregir el dato y lograr que el banco retome la evaluación?</div></div>`},{stage:4,time:'3:15–4:05',k:'06 · EL QUIEBRE',title:'Corregir el dato y retomar la evaluación siguen <span>separados</span>',body:`<div><div class="flow"><article class="node"><small>01 · ORIGEN</small><b>Entidad que reportó</b><p>Corrige el dato en la fuente.</p></article><article class="node"><small>02 · REGISTRO</small><b>Registro correspondiente</b><p>Refleja la actualización cuando aplica.</p></article><article class="node"><small>03 · EVALUACIÓN</small><b>Banco evaluador</b><p>Decide si retoma el análisis.</p></article><article class="node"><small>04 · RESULTADO</small><b>Reingreso</b><p>La operación vuelve al flujo si llega a tiempo.</p></article></div><div class="callout">Ruta Segura no crea otro registro. Conecta la corrección con la continuidad de la operación.</div></div>`},{stage:4,time:'4:05–4:40',k:'07 · COORDINAR SIN REEMPLAZAR',title:'La lógica de Uber: <span>coordinar</span> el sistema detrás de una sola experiencia',body:`<div class="analogy"><section class="panel"><h2>Uber Eats</h2><div class="lane"><b>Pedido</b><span>Persona</span><i></i><span>Restaurante</span></div><div class="lane"><b>Pago</b><span>Persona</span><i></i><span>Medio de pago</span></div><div class="lane"><b>Entrega</b><span>Restaurante</span><i></i><span>Repartidor</span></div></section><div class="equals">↔</div><section class="panel"><h2>Ruta Segura</h2><div class="lane"><b>Corrección</b><span>Carolina</span><i></i><span>Reportante</span></div><div class="lane"><b>Actualización</b><span>Reportante</span><i></i><span>Registro</span></div><div class="lane"><b>Reingreso</b><span>Evidencia</span><i></i><span>Banco</span></div><div class="micro"><div><small>01</small><b>Traduce y completa</b></div><div><small>02</small><b>Coordina y acompaña</b></div><div><small>03</small><b>Reúne evidencia</b></div></div></section></div>`},{stage:4,time:'4:40–5:30',k:'08 · PROTOTIPO',title:'Del relato al <span>reingreso</span>',body:`<div class="phones"><div class="phone"><span class="phoneCap">1 · RELATO Y ANTECEDENTES</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura</div><h3>Hablemos de lo que pasó.</h3><p>Con algunas preguntas simples prepararemos tu caso.</p><div class="bubble"><b>Cuéntame qué ocurrió con tu crédito.</b></div><div class="bubble me">Todavía aparece una deuda que pagué hace dos meses.</div><div class="bubble"><b>¿Qué institución informó la deuda?</b></div><div class="bubble me">Tarjeta Andes.</div><div class="btn">Continuar →</div></div></div><div class="phone"><span class="phoneCap">2 · SEGUIMIENTO</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura</div><h3>Tu caso está en investigación.</h3><p>Esperamos confirmación para verificar la corrección.</p><div class="event"><i class="dot">✓</i><div><b>Solicitud creada</b><span>Autorización registrada</span></div></div><div class="event"><i class="dot">✓</i><div><b>Antecedentes revisados</b><span>Comprobante correcto</span></div></div><div class="event"><i class="dot">✓</i><div><b>Recibida por la institución</b><span>Recepción confirmada</span></div></div><div class="event"><i class="dot wait">◷</i><div><b>En investigación</b><span>Validando actualización</span></div></div></div></div><div class="phone"><span class="phoneCap">3 · CIERRE VERIFICABLE</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura · banco</div><h3>Gestión de casos</h3><div class="case"><small>CASO RS–2026–0148</small><h4>Carolina</h4><p>Deuda pagada aún aparece en el informe.</p><div class="ok">✓ Resolución verificada<br><span style="font-weight:400">La persona ya fue informada.</span></div></div></div></div></div>`},{stage:4,time:'5:30–6:15',k:'09 · EXPERIENCIA',title:'Menos <span>fricción</span>, sin crear otro silo',body:`<div class="journeys"><div class="jrow"><div class="jlabel"><small>HOY</small><b>Sistema fragmentado</b></div><div class="phase"><b>Descubre el bloqueo</b><p>Pregunta la causa y revisa su informe.</p></div><div class="phase"><b>Busca el origen</b><p>Compara registros e identifica al reportante.</p></div><div class="phase"><b>Ingresa reclamo</b><p>Redacta otra vez y adjunta comprobantes.</p></div><div class="phase"><b>Espera y escala</b><p>Consulta, repite antecedentes y vuelve a esperar.</p></div><div class="phase"><b>Verifica y retoma</b><p>Comprueba por sí misma y pide reevaluación.</p></div></div><div class="jrow good"><div class="jlabel"><small>CON RUTA SEGURA</small><b>Una sola ruta</b></div><div class="phase"><b>Ingreso</b><p>Relata una vez y adjunta antecedentes.</p></div><div class="phase"><b>Orientación</b><p>Identifica responsable y faltantes.</p></div><div class="phase"><b>Coordinación</b><p>Expediente estructurado y trazable.</p></div><div class="phase"><b>Seguimiento</b><p>Estado, plazo y próxima acción visibles.</p></div><div class="phase"><b>Cierre</b><p>Evidencia vinculada al reingreso.</p></div></div><div class="delta"><article><small>INGRESO</small><b>Relatar una vez</b><p>Un caso y antecedentes reutilizables.</p></article><article><small>SEGUIMIENTO</small><b>Una ruta común</b><p>Responsable, estado, plazo y próxima acción.</p></article><article><small>CIERRE</small><b>Evidencia para reingresar</b><p>La corrección se conecta con la continuidad.</p></article></div></div>`},{stage:5,time:'7:05–7:30',k:'10 · MODELO DE MONETIZACIÓN',title:'B2B2C: Carolina usa; el banco <span>paga</span>',body:`<div class="pilot"><section class="pilotbox" style="background:var(--navy);color:#fff;border:0"><small style="color:#B9DDF8;font-weight:900">MODELO PROPUESTO</small><h2 style="font-size:58px;margin:18px 0">B2B2C</h2><p style="color:#D5E0E7">Para Carolina el servicio es gratuito. Hipótesis de comprador: Crédito Hipotecario. El banco paga solo si continuidad, eficiencia y trazabilidad superan el costo y la complejidad añadida.</p></section><div class="pricing"><div class="price"><span>01</span><div><b>Implementación inicial</b><p>Configuración, seguridad e integración.</p></div></div><div class="price"><span>02</span><div><b>Suscripción base</b><p>Plataforma, soporte y volumen incluido.</p></div></div><div class="price"><span>03</span><div><b>Volumen adicional</b><p>Cobro por caso gestionado, no corregido.</p></div></div></div></div>`},
+</div><main class="deck"><article id="slide" class="slide"></article></main><div id="presentWho" class="present-who" aria-label="Quien presenta">Cris</div><div id="presentTimer" class="presentation-timer" aria-label="Tiempo restante">10:00</div><nav class="controls"><button id="prev">←</button><span class="progress"><i id="bar"></i></span><span id="count" class="count"></span><button id="next">→</button><button id="reset" title="Reiniciar presentación" aria-label="Reiniciar presentación">↺</button><button id="full">⛶</button></nav><script>const stages=['Hipótesis','Opportunity Brief','Supuestos','Evidencia','Propuesta de valor','Modelo','Piloto'];const slides=[{stage:0,time:'0:00–0:30',k:'01 · RUTA SEGURA · PITCH v0.5',body:`<div class="hero"><div class="hero-copy"><h1>No partimos con Carolina.<br><span>La encontramos.</span></h1><p>Partimos investigando control de datos personales. Al buscar cuándo ese problema genera una consecuencia real, llegamos a un momento crítico: una evaluación hipotecaria bloqueada por información incorrecta, desactualizada o difícil de rastrear.</p></div><div><div class="logoCard"><div class="logoLock"><div class="logoIcon">♢</div><div class="logoWord">ruta<span>segura</span></div></div></div></div></div>`},{stage:1,time:'0:30–1:15',k:'02 · DE LA HIPÓTESIS AL FOCO',title:'De una hipótesis amplia a un momento <span>crítico</span>',body:`<div class="focusRedesign"><div class="focusSteps"><article class="focusStep"><small>01 · HIPÓTESIS INICIAL</small><strong>Control de datos personales</strong><p>Partimos explorando una necesidad amplia: entender y ejercer control sobre los datos.</p></article><div class="focusArrow">→</div><article class="focusStep mid"><small>02 · PRIMER RECORTE</small><strong>Banca</strong><p>Buscamos un contexto donde una inconsistencia pudiera afectar una decisión concreta.</p></article><div class="focusArrow">→</div><article class="focusStep final"><small>03 · SEGMENTO FINAL</small><strong>Hipotecarios bloqueados por una inconsistencia</strong><p>El dato deja de ser abstracto cuando puede detener una operación viable.</p></article></div><div class="focusInsight">No buscamos cualquier problema de datos. <b>Buscamos el momento en que un dato incorrecto cambia una decisión real.</b></div></div>`},{stage:2,time:'1:15–1:35',k:'03 · SUPUESTOS QUE PODÍAN HACER CAER EL CASO',title:'Antes de construir, explicitamos qué tenía que ser <span>cierto</span>',body:`<div class="evidence"><div class="column"><h2>Problema y persona</h2><div class="item"><strong>01</strong><p><b>Frecuencia.</b> Que la inconsistencia ocurra con suficiente relevancia en procesos hipotecarios.</p></div><div class="item"><strong>02</strong><p><b>Urgencia.</b> Que la persona actúe cuando el dato pone en riesgo una operación concreta.</p></div><div class="item"><strong>03</strong><p><b>Confianza.</b> Que acepte apoyo de un tercero con autorización expresa y mínimo de datos.</p></div></div><div class="column blue"><h2>Banco y negocio</h2><div class="item"><strong>04</strong><p><b>Reingreso.</b> Que el banco acepte un expediente coordinado y trazable para retomar la evaluación.</p></div><div class="item"><strong>05</strong><p><b>Pago.</b> Que exista un dueño interno y disposición a pagar por continuidad, eficiencia y trazabilidad.</p></div></div><div class="question"><b>Regla:</b> la evidencia tensiona estos supuestos; lo que siga abierto pasa al piloto.</div></div>`},{stage:3,time:'1:35–2:05',k:'04 · ALLÍ NACE CAROLINA',title:'La operación sigue <span>corriendo</span> mientras el dato se corrige',body:`<div class="story"><section class="storyPanel"><h2>Una vivienda viable.<br>Una deuda ya pagada.<br>Una evaluación detenida.</h2><p>Carolina consulta a la institución que informó la deuda, revisa el registro y vuelve al banco. Cada actor resuelve una parte, pero ella no encuentra un hilo que confirme que la corrección llegó al evaluador antes de que venza la operación.</p></section><aside class="casebox"><small>EL JOB REAL</small><strong>01</strong><p>operación que debe mantenerse viva mientras el dato se corrige entre distintos actores.</p><div class="goal">Carolina no quiere “corregir un dato”. Quiere ser evaluada con información correcta antes de que su operación pierda vigencia.</div></aside></div>`},{stage:3,time:'2:05–3:15',k:'05 · EVIDENCIA Y VACÍOS',title:'La evidencia sostiene la <span>oportunidad</span>, no el negocio',body:`<div class="evidence"><div class="column"><h2>Lo que sí sostiene</h2><div class="item"><strong>249k</strong><p>Reportes con saldos desactualizados y registros ambiguos.</p></div><div class="item"><strong>1.700</strong><p>Postulantes hipotecarios con diferencias entre registros para una misma persona.</p></div><div class="item"><strong>2026</strong><p>REDEC y Ley 21.719 cambian el contexto y vuelven oportuno investigar.</p></div></div><div class="column blue"><h2>Lo que debe probar el piloto</h2><div class="item"><strong>01</strong><p>Incidencia actual del problema en hipotecarios en Chile.</p></div><div class="item"><strong>02</strong><p>Dónde persiste el quiebre entre corrección y reingreso.</p></div><div class="item"><strong>03</strong><p>Aceptación, esfuerzo operativo, dueño interno y disposición a pagar.</p></div></div><div class="question"><b>Pregunta central:</b> ¿persiste una brecha relevante entre corregir el dato y lograr que el banco retome la evaluación?</div></div>`},{stage:4,time:'3:15–4:05',k:'06 · EL QUIEBRE',title:'Corregir el dato y retomar la evaluación siguen <span>separados</span>',body:`<div><div class="flow"><article class="node"><small>01 · ORIGEN</small><b>Entidad que reportó</b><p>Corrige el dato en la fuente.</p></article><article class="node"><small>02 · REGISTRO</small><b>Registro correspondiente</b><p>Refleja la actualización cuando aplica.</p></article><article class="node"><small>03 · EVALUACIÓN</small><b>Banco evaluador</b><p>Decide si retoma el análisis.</p></article><article class="node value"><small>04 · RESULTADO</small><b>Reingreso</b><p>La operación vuelve al flujo si llega a tiempo.</p><span class="value-tag">Donde está el valor</span></article></div><div class="callout">Ruta Segura no crea otro registro. Conecta la corrección con la continuidad de la operación.</div></div>`},{stage:4,time:'4:05–4:40',k:'07 · COORDINAR SIN REEMPLAZAR',title:'La lógica de Uber: <span>coordinar</span> el sistema detrás de una sola experiencia',body:`<div class="analogy"><section class="panel"><h2>Uber Eats</h2><div class="lane"><b>Pedido</b><span>Persona</span><i></i><span>Restaurante</span></div><div class="lane"><b>Pago</b><span>Persona</span><i></i><span>Medio de pago</span></div><div class="lane"><b>Entrega</b><span>Restaurante</span><i></i><span>Repartidor</span></div></section><div class="equals">↔</div><section class="panel"><h2>Ruta Segura</h2><div class="lane"><b>Corrección</b><span>Carolina</span><i></i><span>Reportante</span></div><div class="lane"><b>Actualización</b><span>Reportante</span><i></i><span>Registro</span></div><div class="lane"><b>Reingreso</b><span>Evidencia</span><i></i><span>Banco</span></div><div class="micro"><div><small>01</small><b>Traduce y completa</b></div><div><small>02</small><b>Coordina y acompaña</b></div><div><small>03</small><b>Reúne evidencia</b></div></div></section></div>`},{stage:4,time:'4:40–5:30',k:'08 · PROTOTIPO',title:'Del relato al <span>reingreso</span>',body:`<div class="phones"><div class="phone"><span class="phoneCap">1 · RELATO Y ANTECEDENTES</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura</div><h3>Hablemos de lo que pasó.</h3><p>Con algunas preguntas simples prepararemos tu caso.</p><div class="bubble"><b>Cuéntame qué ocurrió con tu crédito.</b></div><div class="bubble me">Todavía aparece una deuda que pagué hace dos meses.</div><div class="bubble"><b>¿Qué institución informó la deuda?</b></div><div class="bubble me">Tarjeta Andes.</div><div class="btn">Continuar →</div></div></div><div class="phone"><span class="phoneCap">2 · SEGUIMIENTO</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura</div><h3>Tu caso está en investigación.</h3><p>Esperamos confirmación para verificar la corrección.</p><div class="event"><i class="dot">✓</i><div><b>Solicitud creada</b><span>Autorización registrada</span></div></div><div class="event"><i class="dot">✓</i><div><b>Antecedentes revisados</b><span>Comprobante correcto</span></div></div><div class="event"><i class="dot">✓</i><div><b>Recibida por la institución</b><span>Recepción confirmada</span></div></div><div class="event"><i class="dot wait">◷</i><div><b>En investigación</b><span>Validando actualización</span></div></div></div></div><div class="phone"><span class="phoneCap">3 · CIERRE VERIFICABLE</span><div class="screen"><div class="notch"></div><div class="rs">▣ rutasegura · banco</div><h3>Gestión de casos</h3><div class="case"><small>CASO RS–2026–0148</small><h4>Carolina</h4><p>Deuda pagada aún aparece en el informe.</p><div class="ok">✓ Resolución verificada<br><span style="font-weight:400">La persona ya fue informada.</span></div></div></div></div></div>`},{stage:4,time:'5:30–6:15',k:'09 · EXPERIENCIA',title:'Menos <span>fricción</span>, sin crear otro silo',body:`<div class="journeys"><div class="jrow"><div class="jlabel"><small>HOY</small><b>Sistema fragmentado</b></div><div class="phase"><b>Descubre el bloqueo</b><p>Pregunta la causa y revisa su informe.</p></div><div class="phase"><b>Busca el origen</b><p>Compara registros e identifica al reportante.</p></div><div class="phase"><b>Ingresa reclamo</b><p>Redacta otra vez y adjunta comprobantes.</p></div><div class="phase"><b>Espera y escala</b><p>Consulta, repite antecedentes y vuelve a esperar.</p></div><div class="phase"><b>Verifica y retoma</b><p>Comprueba por sí misma y pide reevaluación.</p></div></div><div class="jrow good"><div class="jlabel"><small>CON RUTA SEGURA</small><b>Una sola ruta</b></div><div class="phase"><b>Ingreso</b><p>Relata una vez y adjunta antecedentes.</p></div><div class="phase"><b>Orientación</b><p>Identifica responsable y faltantes.</p></div><div class="phase"><b>Coordinación</b><p>Expediente estructurado y trazable.</p></div><div class="phase"><b>Seguimiento</b><p>Estado, plazo y próxima acción visibles.</p></div><div class="phase value"><b>Cierre</b><p>Evidencia vinculada al reingreso.</p></div></div><div class="delta"><article><small>INGRESO</small><b>Relatar una vez</b><p>Un caso y antecedentes reutilizables.</p></article><article><small>SEGUIMIENTO</small><b>Una ruta común</b><p>Responsable, estado, plazo y próxima acción.</p></article><article class="value"><small>CIERRE</small><b>Evidencia para reingresar</b><p>La corrección se conecta con la continuidad.</p><span class="value-tag">Donde está el valor</span></article></div></div>`},{stage:5,time:'7:05–7:30',k:'10 · MODELO DE MONETIZACIÓN',title:'B2B2C: Carolina usa; el banco <span>paga</span>',body:`<div class="pilot"><section class="pilotbox" style="background:var(--navy);color:#fff;border:0"><small style="color:#B9DDF8;font-weight:900">MODELO PROPUESTO</small><h2 style="font-size:58px;margin:18px 0">B2B2C</h2><p style="color:#D5E0E7">Para Carolina el servicio es gratuito. Hipótesis de comprador: Crédito Hipotecario. El banco paga solo si continuidad, eficiencia y trazabilidad superan el costo y la complejidad añadida.</p></section><div class="pricing"><div class="price"><span>01</span><div><b>Implementación inicial</b><p>Configuración, seguridad e integración.</p></div></div><div class="price"><span>02</span><div><b>Suscripción base</b><p>Plataforma, soporte y volumen incluido.</p></div></div><div class="price"><span>03</span><div><b>Volumen adicional</b><p>Cobro por caso gestionado, no corregido.</p></div></div></div></div>`},
 {stage:5,time:'7:30–8:10',k:'11 · CÓMO SABREMOS QUE FUNCIONA',title:'Outcome, North Star y <span>KPIs</span> concretos',body:`<div class="value"><section class="sensitivity"><small>OUTCOME DECLARADO</small><div class="money">≥60%</div><div style="font-size:15px;line-height:1.45;color:#D5E0E7">de solicitudes de rectificación para trámites hipotecarios alcanzan <b>Resolución Verificada y corrección efectiva</b> dentro de plazo.</div><div style="margin-top:24px;padding-top:16px;border-top:1px solid #44545F;font-size:12px;line-height:1.4"><b style="color:#8CC4F5">NORTH STAR:</b> % que obtiene Resolución Verificada antes de que caduque su evaluación crediticia.</div></section><div class="pricing kpiPricing"><div class="price"><span>+30%</span><div><b>KPI de comportamiento · hipótesis</b><p>Solicitudes completas y correctamente dirigidas al primer intento.</p></div></div><div class="price"><span>+25%</span><div><b>KPI de negocio · hipótesis</b><p>Casos iniciados que alcanzan Resolución Verificada dentro del plazo.</p></div></div><div class="price"><span>↓</span><div><b>KPI operativo</b><p>Días desde detección del error hasta actualización efectiva en el sistema evaluador.</p></div></div></div></div>`},
 {stage:5,time:'8:10–8:30',k:'12 · VALOR PARA EL BANCO',title:'¿Por qué un banco <span>pagaría</span> por Ruta Segura?',body:`<div><div class="valueCards"><article style="background:#F5FAFF;border-color:#CFE2F6"><small>MENOR CARGA OPERATIVA</small><b>Menos contactos y reprocesos</b><p>Reduce clasificación manual, derivaciones y reconstrucción de antecedentes entre canales.</p></article><article style="background:#F5FAFF;border-color:#CFE2F6"><small>MÁS OPERACIONES VIABLES</small><b>Más continuidad hipotecaria</b><p>Busca evitar que una operación potencialmente aprobable se caiga solo porque una corrección no llegó a tiempo.</p></article><article style="background:#F5FAFF;border-color:#CFE2F6"><small>MAYOR TRAZABILIDAD</small><b>Un expediente verificable</b><p>Conecta corrección, actualización y reingreso en una sola ruta de evidencia.</p></article></div><div class="thesis" style="margin-top:22px;text-align:center;font-size:clamp(18px,1.7vw,27px);padding:24px 28px"><b>El banco no paga por corregir datos.</b><br>Paga por recuperar continuidad en operaciones que todavía pueden concretarse.</div><div style="margin-top:12px;text-align:center;color:var(--muted);font-size:12px">El impacto operativo y el ahorro económico deben validarse en el piloto.</div></div>`},
-{stage:6,time:'8:30–9:20',k:'13 · PILOTO Y ESCALA',title:'¿Cómo sabremos si el producto puede <span>escalar</span>?',body:`<div class="pilot"><div class="pricing"><div class="price"><span>01</span><div><b>1 banco</b><p>Piloto Wizard of Oz pagado.</p></div></div><div class="price"><span>02</span><div><b>6–8 semanas</b><p>Ventana para observar el flujo real.</p></div></div><div class="price"><span>03</span><div><b>20–30 casos</b><p>Casos elegibles y autorizados.</p></div></div></div><section class="pilotbox"><h2>Cuatro puertas de éxito</h2><div class="measure" style="grid-template-columns:repeat(4,1fr)"><article><strong>1</strong><b>Deseabilidad</b><br>Persona y banco usan el flujo.</article><article><strong>2</strong><b>Efectividad</b><br>Mejora primer intento y Resolución Verificada.</article><article><strong>3</strong><b>Negocio</b><br>Menos trabajo por caso + disposición a pagar.</article><article><strong>4</strong><b>Escala</b><br>Costo por caso baja al crecer el volumen.</article></div><div class="callout" style="margin-top:14px"><b>GO de escala:</b> continuidad ↑ + costo por caso ↓ + disposición a pagar confirmada. Los umbrales se acuerdan antes del piloto.</div></section></div>`},
+{stage:6,time:'8:30–9:20',k:'13 · PILOTO Y ESCALA',title:'¿Cómo sabremos si el producto puede <span>escalar</span>?',body:`<div class="pilot"><div class="pricing"><div class="price"><span>01</span><div><b>1 banco</b><p>Piloto Wizard of Oz pagado.</p></div></div><div class="price"><span>02</span><div><b>6–8 semanas</b><p>Ventana para observar el flujo real.</p></div></div><div class="price"><span>03</span><div><b>20–30 casos</b><p>Casos elegibles y autorizados.</p></div></div></div><section class="pilotbox"><h2>Cuatro puertas de éxito</h2><div class="measure" style="grid-template-columns:repeat(4,1fr)"><article><strong>1</strong><b>Deseabilidad</b><p>Persona y banco usan el flujo.</p></article><article><strong>2</strong><b>Efectividad</b><p>Mejora primer intento y Resolución Verificada.</p></article><article><strong>3</strong><b>Negocio</b><p>Menos trabajo por caso + disposición a pagar.</p></article><article><strong>4</strong><b>Escala</b><p>Costo por caso baja al crecer el volumen.</p></article></div><div class="callout" style="margin-top:14px"><b>GO de escala:</b> continuidad ↑ + costo por caso ↓ + disposición a pagar confirmada. Los umbrales se acuerdan antes del piloto.</div></section></div>`},
 {stage:6,time:'9:20–9:28',k:'14 · CIERRE',body:`<div class="close-paused" style="text-align:center"><div class="press-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="M25 23v18M39 23v18"/></svg></div><h1 style="font-size:clamp(64px,8vw,120px);line-height:.9;margin:0;color:#fff">CRÉDITO PAUSADO</h1><p style="font-size:24px">Volvemos al punto donde quedó Carolina. La operación sigue viva, pero el tiempo corre.</p></div>`},
 {stage:6,time:'9:28–9:36',k:'15 · CIERRE',body:`<div class="close-route" style="text-align:center"><div class="press-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="m20 33 8 8 17-19"/></svg></div><h1 style="font-size:clamp(56px,7vw,104px);line-height:.9;margin:0">RUTA SEGURA<br><span style="color:var(--blue)">INTERVIENE</span></h1><p style="font-size:22px;color:var(--muted)">Ordena antecedentes · coordina responsables · reúne evidencia.</p></div>`},
 {stage:6,time:'9:36–9:44',k:'15 · CIERRE',body:`<div class="close-bank" style="text-align:center"><div class="press-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 26 32 12l22 14"/><path d="M14 28h36M16 50h32M12 54h40"/><path d="M20 30v18M29 30v18M35 30v18M44 30v18"/></svg></div><h1 style="font-size:clamp(56px,7vw,104px);line-height:.9;margin:0">EL BANCO<br><span style="color:var(--blue)">REINCORPORA</span></h1><p style="font-size:22px;color:var(--muted)">Recibe el expediente, valida la actualización y devuelve el caso al flujo.</p></div>`},
 {stage:6,time:'9:44–9:52',k:'15 · CIERRE',body:`<div class="close-ok" style="text-align:center"><div class="press-icon ok" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="m20 33 8 8 17-19"/></svg></div><h1 style="font-size:clamp(56px,7.2vw,110px);line-height:.9;margin:0;color:#1E9B43">EVALUACIÓN RETOMADA</h1><p style="font-size:22px;color:var(--muted)">La evaluación continúa con información correcta antes de perder vigencia.</p></div>`},
-{stage:6,time:'9:52–10:00',k:'15 · CIERRE',body:`<div class="close-win"><h1 style="text-align:center;font-size:52px;line-height:.95;margin:0 0 22px">Cuando la operación sigue viva,<br><span style="color:var(--blue)">ambos ganan.</span></h1><div class="story"><section class="storyPanel" style="text-align:center;background:#F1F8FF"><div class="press-icon bank" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 26 32 12l22 14"/><path d="M14 28h36M16 50h32M12 54h40"/><path d="M20 30v18M29 30v18M35 30v18M44 30v18"/></svg></div><h2 style="font-size:36px;margin:14px 0">Evaluación retomada</h2><p>El banco conserva una operación viable y reduce reprocesos evitables.</p></section><aside class="casebox" style="text-align:center;background:#F3FBF5;border-color:#CBECD4"><div class="press-icon house" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M12 30 32 13 52 30"/><path d="M20 28v22h24V28"/><rect x="28" y="36" width="8" height="14" rx="1.2"/></svg></div><h2 style="font-size:36px;margin:14px 0">Proyecto de vida en marcha</h2><p>Carolina puede continuar con su casa propia: el dato correcto llegó a tiempo.</p></aside></div><div class="callout" style="margin-top:14px;text-align:center"><b>Éxito =</b> mantener viva la operación + demostrar valor para el banco + reducir costo por caso al escalar.</div></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=15;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);const h='#'+(idx+1);if(location.hash!==h)location.hash=h}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{if(typeof introActive==='function'&&introActive())return;const n=parseInt(location.hash.slice(1),10);if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
+{stage:6,time:'9:52–10:00',k:'15 · CIERRE',body:`<div class="close-win"><h1 style="text-align:center;font-size:52px;line-height:.95;margin:0 0 22px">Cuando la operación sigue viva,<br><span style="color:var(--blue)">ambos ganan.</span></h1><div class="story"><section class="storyPanel" style="text-align:center;background:#F1F8FF"><div class="press-icon bank" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M10 26 32 12l22 14"/><path d="M14 28h36M16 50h32M12 54h40"/><path d="M20 30v18M29 30v18M35 30v18M44 30v18"/></svg></div><h2 style="font-size:36px;margin:14px 0">Evaluación retomada</h2><p>El banco conserva una operación viable y reduce reprocesos evitables.</p></section><aside class="casebox" style="text-align:center;background:#F3FBF5;border-color:#CBECD4"><div class="press-icon house" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M12 30 32 13 52 30"/><path d="M20 28v22h24V28"/><rect x="28" y="36" width="8" height="14" rx="1.2"/></svg></div><h2 style="font-size:36px;margin:14px 0">Proyecto de vida en marcha</h2><p>Carolina puede continuar con su casa propia: el dato correcto llegó a tiempo.</p></aside></div><div class="callout" style="margin-top:14px;text-align:center"><b>Éxito =</b> mantener viva la operación + demostrar valor para el banco + reducir costo por caso al escalar.</div></div>`},
+{stage:6,time:'10:00',k:'16 · GRACIAS',body:`<div class="close-thanks"><div class="press-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M12 30 32 13 52 30"/><path d="M20 28v22h24V28"/><rect x="28" y="36" width="8" height="14" rx="1.2"/></svg></div><h1>Gracias</h1><p class="thanks-names">Cristian · Valeria · Erick · Tamara</p><p class="thanks-program">Diploma en Estrategia y Experiencia de Productos en la Era de la IA<br>Unegocios FEN Universidad de Chile · Agosto 2026</p></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=16;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){if(idx===slides.length-1)return 16;return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);const h='#'+(idx+1);if(location.hash!==h)location.hash=h}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{if(typeof introActive==='function'&&introActive())return;const n=parseInt(location.hash.slice(1),10);if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
 const introStates=[...document.querySelectorAll('[data-intro]')];
 const introOrder=['dream','evaluation','problem','risk'];
 let introStep=0;
