@@ -721,13 +721,12 @@ body.intro-open #presentTimer{right:22px !important}
 
     .hero-app-screen{overflow:hidden!important;background:#f3f7fb!important;border-radius:29px!important}
     .hero-phone-shell .prototype-flow{background:#f3f7fb;position:absolute;inset:0;overflow:hidden}
-    .hero-phone-shell .prototype-screen{padding:0;overflow:hidden;background:#f3f7fb;position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;z-index:1}
-    .hero-phone-shell .prototype-screen.proto-active{opacity:1;visibility:visible;pointer-events:auto;z-index:3}
-    .hero-phone-shell .prototype-screen.proto-leaving{opacity:0;visibility:visible;pointer-events:none;z-index:2}
+    .hero-phone-shell .prototype-screen{padding:0!important;overflow:hidden!important;background:#f3f7fb;position:absolute!important;inset:0!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:none!important;z-index:1}
+    .hero-phone-shell .prototype-screen.proto-active{opacity:1!important;visibility:visible!important;pointer-events:auto!important;z-index:3}
     .hero-phone-shell .prototype-dots{display:none}
     .hero-app-screen,.phone .screen{container-type:inline-size;overflow:hidden!important}
     .rs-app,.hero-app-screen,.phone .screen,.prototype-screen{scrollbar-width:none;-ms-overflow-style:none}.rs-app::-webkit-scrollbar,.hero-app-screen::-webkit-scrollbar,.phone .screen::-webkit-scrollbar{display:none}.rs-app{box-sizing:border-box;height:100%;overflow:hidden;display:flex;flex-direction:column;padding:2.1em 1.15em 1.25em;background:#f3f7fb;color:#1f2933;font-size:3.4cqi;line-height:1.25}
-    .hero-app-screen .rs-app{padding-top:38px;padding-bottom:28px;padding-left:1.05em;padding-right:1.05em;font-size:6.5cqi}
+    .hero-app-screen .rs-app{padding-top:38px;padding-bottom:28px;padding-left:1.05em;padding-right:1.05em;font-size:4.2cqi}
     .hero-app-screen [data-prototype-screen="0"] .rs-chat > :nth-child(n+3){display:none}
     .rs-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55em}
     .rs-brand{display:flex;align-items:center;gap:.4em;color:#2f7fca;font-weight:800;letter-spacing:-.03em}
@@ -3609,10 +3608,7 @@ body.intro-open #presentTimer{right:22px !important}
 
       function showScreen(nextIndex) {
         screens.forEach((screen, screenIndex) => {
-          const wasActive = screen.classList.contains('proto-active');
           screen.classList.toggle('proto-active', screenIndex === nextIndex);
-          screen.classList.toggle('proto-leaving', wasActive && screenIndex !== nextIndex);
-          if (screenIndex !== nextIndex) setTimeout(() => screen.classList.remove('proto-leaving'), 520);
         });
         dots.forEach((dot, dotIndex) => dot.classList.toggle('on', dotIndex === nextIndex));
         activeScreen = nextIndex;
