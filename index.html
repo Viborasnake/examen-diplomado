@@ -1529,7 +1529,9 @@
       transition: opacity .45s ease, transform .62s cubic-bezier(.2,.75,.25,1);
     }
 
-    .app-demo-live .hero-phone-shell {
+    .app-demo-live .hero-phone-shell,
+    .logoCard.reveal-visible .hero-phone-shell,
+    .hero .logoCard:not(.reveal-item) .hero-phone-shell {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
@@ -3485,15 +3487,14 @@
           </div>`
       }
 
-      const introIsVisible = Boolean(document.getElementById('introSequence'));
+      const introOpen = document.getElementById('introSequence')?.classList.contains('show');
       const waitsForReveal = card.classList.contains('reveal-item') && !card.classList.contains('reveal-visible');
-      if (introIsVisible || waitsForReveal || card.dataset.appPhoneStarted) return;
+      if (introOpen || waitsForReveal) return;
 
+      card.classList.add('app-demo-live');
+      if (card.dataset.appPhoneStarted) return;
       card.dataset.appPhoneStarted = 'true';
-      requestAnimationFrame(() => {
-        card.classList.add('app-demo-live');
-        playHeroPrototypeRoute(card);
-      });
+      requestAnimationFrame(() => playHeroPrototypeRoute(card));
     }
 
     function playHeroPrototypeRoute(card) {
@@ -3692,7 +3693,7 @@
       }
 
       const revealPlans = [
-        ['.hero-copy', '.logoCard', '.essence'],
+        ['.hero-copy, .logoCard', '.essence'],
         [
           '.focusSteps > :nth-child(1)',
           '.focusSteps > :nth-child(2), .focusSteps > :nth-child(3)',
@@ -3779,6 +3780,7 @@
         revealStep = Math.max(revealStep, groupIndex + 1);
         updateSpeakerCount();
         enhancePrototypePhones();
+        enhanceHeroApp();
         return true;
       }
 
