@@ -9,8 +9,8 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: github-pages
-  cancel-in-progress: false
+  group: ruta-segura-pages
+  cancel-in-progress: true
 jobs:
   deploy:
     environment:
