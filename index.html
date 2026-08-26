@@ -153,6 +153,40 @@
     small[style*="font-weight:900"] {
       font-weight: var(--fw-label) !important;
     }
+
+    .kpiPricing .price {
+      grid-template-columns: clamp(184px, 13vw, 210px) minmax(0, 1fr);
+      gap: clamp(18px, 1.6vw, 26px);
+      padding-inline: clamp(20px, 1.7vw, 28px);
+    }
+
+    .kpiPricing .price span {
+      justify-self: end;
+      min-width: 0;
+      font-size: clamp(40px, 3vw, 50px);
+      letter-spacing: -0.055em;
+      text-align: right;
+    }
+
+    .kpiPricing .price b {
+      font-size: clamp(15px, 1.3vw, 21px);
+    }
+
+    .kpiPricing .price p {
+      font-size: clamp(10px, 0.82vw, 13px);
+    }
+
+    @media (max-width: 640px) {
+      .kpiPricing .price {
+        grid-template-columns: 110px minmax(0, 1fr);
+        gap: 12px;
+        padding-inline: 14px;
+      }
+
+      .kpiPricing .price span {
+        font-size: 36px;
+      }
+    }
   </style>
   <script>
     document.head.appendChild(document.getElementById('typographic-weight-system'));
