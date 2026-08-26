@@ -484,6 +484,124 @@
       }
     }
 
+    /* Closing sequence: same typographic voice, no platform emojis */
+    .closing-sequence .closing-title {
+      font-weight: var(--fw-title) !important;
+      letter-spacing: -0.065em !important;
+      text-wrap: balance;
+    }
+
+    .closing-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border: 1px solid #cfe2f6;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: #f1f8ff;
+      color: var(--blue);
+      box-shadow: 0 12px 28px #20384a14;
+    }
+
+    .closing-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .closing-icon.success,
+    .closing-outcome.life .closing-icon {
+      border-color: #cbead3;
+      background: #edf9f0;
+      color: #239448;
+    }
+
+    .closing-results {
+      position: relative;
+      grid-template-columns: 1fr 1fr !important;
+      gap: clamp(52px, 6vw, 88px) !important;
+    }
+
+    .closing-results::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 18px;
+      bottom: 18px;
+      left: 50%;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, #b9cbd8 20%, #b9cbd8 80%, transparent);
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity .35s ease;
+    }
+
+    .closing-results::after {
+      content: "Y";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #cfe2f6;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: var(--fw-label);
+      line-height: 34px;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 20px #20384a17;
+      transition: opacity .35s ease;
+    }
+
+    .closing-results:has(.closing-outcome.life.reveal-visible)::before,
+    .closing-results:has(.closing-outcome.life.reveal-visible)::after {
+      opacity: 1;
+    }
+
+    .closing-results .closing-outcome {
+      position: relative;
+      z-index: 1;
+      min-height: 292px;
+      padding: 34px 32px;
+      border-radius: 24px;
+      box-shadow: 0 14px 34px #20384a0f;
+    }
+
+    .closing-results .closing-outcome.bank {
+      border-top: 4px solid var(--blue);
+    }
+
+    .closing-results .closing-outcome.life {
+      border-top: 4px solid #39a65a;
+    }
+
+    .closing-results .closing-outcome h2 {
+      font-weight: var(--fw-title) !important;
+      letter-spacing: -0.045em;
+    }
+
+    @media (max-width: 900px) {
+      .closing-results {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+      }
+
+      .closing-results::before,
+      .closing-results::after {
+        display: none;
+      }
+    }
+
     .chat-keyboard {
       position: absolute;
       z-index: 5;
@@ -843,6 +961,67 @@
       setTimeout(typeCharacter, 700);
     }
 
+    const closingIcons = {
+      pause: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"/><path d="M25 23v18M39 23v18"/></svg>',
+      bank: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 25 32 12l23 13"/><path d="M13 27h38M16 50h32M11 55h42"/><path d="M19 29v19M29 29v19M39 29v19M49 29v19"/></svg>',
+      house: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 30 32 11l23 19"/><path d="M15 27v27h34V27"/><path d="M27 54V39h10v15"/><path d="M20 34h7M37 34h7"/></svg>',
+      success: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"/><path d="m20 33 8 8 17-19"/></svg>'
+    };
+
+    function setClosingIcon(container, iconName, extraClass = '') {
+      if (!container || container.dataset.closingIcon === iconName) return;
+      const motionClasses = ['reveal-item', 'reveal-visible', 'reveal-just-entered']
+        .filter(className => container.classList.contains(className));
+      container.dataset.closingIcon = iconName;
+      container.className = ['closing-icon', extraClass, ...motionClasses].filter(Boolean).join(' ');
+      container.removeAttribute('style');
+      container.innerHTML = closingIcons[iconName];
+    }
+
+    function enhanceClosingVisuals() {
+      const slide = document.getElementById('slide');
+      const main = slide?.querySelector('.main');
+      const heading = main?.querySelector('h1');
+      if (!main || !heading) return;
+
+      const title = heading.innerText.replace(/\s+/g, ' ').trim();
+      const isClosing = [
+        'CRÉDITO PAUSADO',
+        'RUTA SEGURA INTERVIENE',
+        'EL BANCO REINCORPORA',
+        'CRÉDITO VALIDADO',
+        'Cuando la operación sigue viva, ambos ganan.'
+      ].includes(title);
+
+      slide.classList.toggle('closing-sequence', isClosing);
+      if (!isClosing) return;
+      heading.classList.add('closing-title');
+
+      const body = heading.parentElement;
+      if (title === 'CRÉDITO PAUSADO') {
+        setClosingIcon(body?.firstElementChild, 'pause');
+      }
+
+      if (title === 'EL BANCO REINCORPORA') {
+        setClosingIcon(body?.firstElementChild, 'bank');
+      }
+
+      if (title === 'CRÉDITO VALIDADO') {
+        setClosingIcon(body?.firstElementChild, 'success', 'success');
+      }
+
+      if (title === 'Cuando la operación sigue viva, ambos ganan.') {
+        const results = main.querySelector('.story');
+        const bank = results?.querySelector('.storyPanel');
+        const life = results?.querySelector('.casebox');
+        results?.classList.add('closing-results');
+        bank?.classList.add('closing-outcome', 'bank');
+        life?.classList.add('closing-outcome', 'life');
+        setClosingIcon(bank?.firstElementChild, 'bank');
+        setClosingIcon(life?.firstElementChild, 'house');
+      }
+    }
+
     function enhancePrototypeChat() {
       const phone = document.querySelector('.phones .phone:first-child');
       if (!phone) return;
@@ -852,6 +1031,8 @@
 
     const prototypeChatObserver = new MutationObserver(enhancePrototypeChat);
     prototypeChatObserver.observe(document.documentElement, { childList: true, subtree: true });
+    const closingVisualObserver = new MutationObserver(enhanceClosingVisuals);
+    closingVisualObserver.observe(document.documentElement, { childList: true, subtree: true });
 
     document.addEventListener('DOMContentLoaded', () => {
       const revealPlans = [
@@ -999,14 +1180,16 @@
       };
 
       go = function enhancedGo(n) {
+        const advancing = n > idx;
+        const retreating = n < idx;
         const target = Math.max(0, Math.min(slides.length - 1, n));
 
-        if (target > idx && revealStep < revealGroups.length) {
+        if (advancing && revealStep < revealGroups.length) {
           revealGroup(revealStep);
           return;
         }
 
-        if (target < idx && revealStep > 1) {
+        if (retreating && revealStep > 1) {
           concealGroup(revealStep - 1);
           return;
         }
