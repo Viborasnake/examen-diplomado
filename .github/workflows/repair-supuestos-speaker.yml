@@ -1,0 +1,113 @@
+name: Repair assumptions and speaker sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-supuestos-speaker.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Repair presentation and speaker
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          # ---------- Presentation ----------
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          marker = "SUPUESTOS QUE PODÍAN HACER CAER EL CASO"
+          if marker not in s:
+              needle = "{stage:1,time:'1:15–2:05',k:'02 · ALLÍ NACE CAROLINA'"
+              if needle not in s:
+                  raise SystemExit('No se encontró el punto de inserción antes de Carolina')
+
+              assumptions = """{stage:2,time:'1:15–1:35',k:'03 · SUPUESTOS QUE PODÍAN HACER CAER EL CASO',title:'Antes de construir, explicitamos qué tenía que ser cierto',body:`<div class=\"evidence\"><div class=\"column\"><h2>Problema y persona</h2><div class=\"item\"><strong>01</strong><p><b>Frecuencia.</b> Que la inconsistencia ocurra con suficiente relevancia en procesos hipotecarios.</p></div><div class=\"item\"><strong>02</strong><p><b>Urgencia.</b> Que la persona actúe cuando el dato pone en riesgo una operación concreta.</p></div><div class=\"item\"><strong>03</strong><p><b>Confianza.</b> Que acepte apoyo de un tercero con autorización expresa y mínimo de datos.</p></div></div><div class=\"column blue\"><h2>Banco y negocio</h2><div class=\"item\"><strong>04</strong><p><b>Reingreso.</b> Que el banco acepte un expediente coordinado y trazable para retomar la evaluación.</p></div><div class=\"item\"><strong>05</strong><p><b>Pago.</b> Que exista un dueño interno y disposición a pagar por continuidad, eficiencia y trazabilidad.</p></div></div><div class=\"question\"><b>Regla:</b> la evidencia tensiona estos supuestos; lo que siga abierto pasa al piloto.</div></div>`},"""
+
+              replacement = assumptions + "{stage:3,time:'1:35–2:05',k:'02 · ALLÍ NACE CAROLINA'"
+              s = s.replace(needle, replacement, 1)
+
+          # Asegura que Carolina quede en Evidencia aunque el slide ya se hubiese insertado.
+          s = s.replace("{stage:1,time:'1:15–2:05',k:'02 · ALLÍ NACE CAROLINA'", "{stage:3,time:'1:35–2:05',k:'02 · ALLÍ NACE CAROLINA'", 1)
+          s = s.replace("{stage:1,time:'1:35–2:05',k:'02 · ALLÍ NACE CAROLINA'", "{stage:3,time:'1:35–2:05',k:'02 · ALLÍ NACE CAROLINA'", 1)
+
+          # Renumera los kickers de TODAS las slides visibles según su orden real.
+          counter = {'n': 0}
+          def renumber_kicker(m):
+              counter['n'] += 1
+              label = re.sub(r'^\d+\s*·\s*', '', m.group(1))
+              return "k:'%02d · %s'" % (counter['n'], label)
+          s = re.sub(r"k:'([^']*)'", renumber_kicker, s)
+
+          p.write_text(s, encoding='utf-8')
+
+          # ---------- Speaker ----------
+          sp = Path('speaker.html')
+          t = sp.read_text(encoding='utf-8')
+
+          # Refuerza Opportunity Brief para que no absorba la etapa de Supuestos.
+          s2_pattern = re.compile(r'(<article class="card" id="s2".*?<div class="script">).*?(</div></div></article>)', re.S)
+          s2_script = '''<p>Nuestra hipótesis inicial era demasiado amplia: personas que querían controlar todos sus datos. El Opportunity Brief nos obligó a recortar el problema hasta encontrar un contexto donde una inconsistencia cambia una decisión real.</p><p>Fuimos desde control de datos personales, a banca, y finalmente a personas con una evaluación hipotecaria viable que queda bloqueada por información incorrecta, desactualizada o difícil de rastrear.</p><p>Ese recorte define la oportunidad. Con el foco claro, el siguiente paso fue explicitar qué tenía que ser cierto para que el caso no se cayera.</p>'''
+          t, n = s2_pattern.subn(lambda m: m.group(1) + s2_script + m.group(2), t, count=1)
+          if n != 1:
+              raise SystemExit('No se pudo actualizar el texto del Opportunity Brief en speaker')
+
+          if 'Supuestos que podían hacer caer la oportunidad' not in t:
+              s2_card = re.search(r'<article class="card" id="s2".*?</article>', t, re.S)
+              if not s2_card:
+                  raise SystemExit('No se encontró s2 para insertar Supuestos')
+
+              new_card = '''\n\n<article class="card" id="s3" data-title="Supuestos que podían hacer caer la oportunidad"><aside class="side"><div class="num">03</div></aside><div><h2 class="title">Supuestos que podían hacer caer la oportunidad</h2><div class="script"><p>Antes de buscar más evidencia, hicimos explícito qué tenía que ser cierto para que esta oportunidad existiera.</p><p><b>Primero:</b> que el problema ocurriera con suficiente relevancia en procesos hipotecarios. <b>Segundo:</b> que la persona estuviera dispuesta a actuar cuando la operación está en riesgo. <b>Tercero:</b> que aceptara apoyo de un tercero bajo autorización expresa y usando solo los datos necesarios.</p><p>Del lado del banco, asumimos que aceptaría un expediente coordinado y trazable para reingresar el caso; y, para que exista negocio, que habría un dueño interno y disposición a pagar por continuidad, eficiencia y trazabilidad.</p><p><b>Estos supuestos guiaron la evidencia. Algunos se tensionaron; los que siguen abiertos pasan directamente al piloto.</b></p></div></div></article>'''
+              pos = s2_card.end()
+              t = t[:pos] + new_card + t[pos:]
+
+          # Renumera todas las cards por su orden real, incluido el nuevo s3.
+          card_pat = re.compile(r'<article class="card" id="s\d+".*?</article>', re.S)
+          card_counter = {'n': -1}
+          def renumber_card(m):
+              card_counter['n'] += 1
+              i = card_counter['n']
+              card = m.group(0)
+              card = re.sub(r'id="s\d+"', f'id="s{i}"', card, count=1)
+              card = re.sub(r'<div class="num">\d+</div>', f'<div class="num">{i:02d}</div>', card, count=1)
+              return card
+          t = card_pat.sub(renumber_card, t)
+          last = card_counter['n']
+
+          # Timeline sincronizado 00..N.
+          timeline = '<nav class="timeline" aria-label="Ir a una sección">' + ''.join(f'<a href="#s{i}">{i:02d}</a>' for i in range(last+1)) + '</nav>'
+          t, n = re.subn(r'<nav class="timeline" aria-label="Ir a una sección">.*?</nav>', timeline, t, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit('No se pudo reconstruir timeline speaker')
+
+          # Los tiempos ya no deben aparecer ni siquiera en el HTML.
+          t = re.sub(r'<div class="time">.*?</div>', '', t, flags=re.S)
+          t = t.replace('Ruta Segura · Pitch v0.5 · Slide 0 + guion original del archivo MD', 'Ruta Segura · Guion de speaker sincronizado con la presentación')
+
+          sp.write_text(t, encoding='utf-8')
+
+          # Self-delete
+          Path('.github/workflows/repair-supuestos-speaker.yml').unlink(missing_ok=True)
+          PY
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Repara etapa de Supuestos y sincroniza speaker"
+          git push
