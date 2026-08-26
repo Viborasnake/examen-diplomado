@@ -22,7 +22,7 @@
 .timeline a.who-vale{border-color:#b7e3c4;color:#1E9B43}
 .timeline a.who-erick{border-color:#f0d39a;color:#A56B12}
 .timeline a.who-tami{border-color:#cfc6f2;color:#6B5BD6}
-body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify-content:center}.auto-scroll-button{min-width:124px!important}.auto-scroll-button .pause-icon{letter-spacing:-.16em;margin-right:5px}
+body{padding-bottom:72px}.controller{left:auto;right:18px;bottom:18px;transform:none;width:auto;padding:6px;display:block;border-radius:999px}.navgroup{justify-content:center}.auto-scroll-button{width:44px;min-width:44px!important;height:44px!important;padding:0!important;border-radius:50%!important;font-size:15px}.auto-scroll-button .pause-icon{letter-spacing:-.16em;margin-right:0}
 </style>
 </head>
 <body>
@@ -74,7 +74,7 @@ body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify
 </main>
 
 <aside class="controller" aria-label="Control de desplazamiento automático">
-  <div class="navgroup"><button id="autoScroll" class="primary auto-scroll-button" type="button" aria-pressed="false">▶ Play</button></div>
+  <div class="navgroup"><button id="autoScroll" class="primary auto-scroll-button" type="button" aria-label="Iniciar desplazamiento automático" title="Iniciar desplazamiento automático" aria-pressed="false">▶</button></div>
 </aside>
 
 <script>
@@ -88,7 +88,9 @@ body{padding-bottom:88px}.controller{grid-template-columns:1fr}.navgroup{justify
 
   function updateControl() {
     control.setAttribute('aria-pressed', String(playing));
-    control.innerHTML = playing ? '<span class="pause-icon">❚❚</span> Pausa' : '▶ Play';
+    control.setAttribute('aria-label', playing ? 'Pausar desplazamiento automático' : 'Iniciar desplazamiento automático');
+    control.setAttribute('title', playing ? 'Pausar desplazamiento automático' : 'Iniciar desplazamiento automático');
+    control.innerHTML = playing ? '<span class="pause-icon">❚❚</span>' : '▶';
   }
 
   function stop() {
