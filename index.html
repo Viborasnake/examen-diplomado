@@ -686,7 +686,8 @@
     .hero-phone-shell .prototype-dots{display:none}
     .hero-app-screen,.phone .screen{container-type:inline-size;overflow:hidden!important}
     .rs-app,.hero-app-screen,.phone .screen,.prototype-screen{scrollbar-width:none;-ms-overflow-style:none}.rs-app::-webkit-scrollbar,.hero-app-screen::-webkit-scrollbar,.phone .screen::-webkit-scrollbar{display:none}.rs-app{box-sizing:border-box;height:100%;overflow:hidden;display:flex;flex-direction:column;padding:2.1em 1.15em 1.25em;background:#f3f7fb;color:#1f2933;font-size:3.4cqi;line-height:1.25}
-    .hero-app-screen .rs-app{padding-top:2.4em}
+    .hero-app-screen .rs-app{padding-top:2.05em;padding-left:1.05em;padding-right:1.05em;font-size:6.5cqi}
+    .hero-app-screen [data-prototype-screen="0"] .rs-chat > :nth-child(n+3){display:none}
     .rs-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55em}
     .rs-brand{display:flex;align-items:center;gap:.4em;color:#2f7fca;font-weight:800;letter-spacing:-.03em}
     .rs-brand i{width:1.45em;height:1.45em;border-radius:.38em;background:#3f8cd5;position:relative}
@@ -702,10 +703,10 @@
     .rs-app h4{margin:.1em 0 .35em;font-size:1.35em;letter-spacing:-.03em}
     .rs-lead{margin:0 0 .55em;color:#627a8b;font-size:.88em;line-height:1.32}
     .rs-chat{display:grid;gap:.38em;flex:1;min-height:0;overflow:hidden;align-content:start;justify-items:stretch}
-    .rs-row{display:grid;grid-template-columns:1.35em 1fr;gap:.35em;align-items:start}
+    .rs-row{display:grid;grid-template-columns:1.35em minmax(0,1fr);gap:.35em;align-items:start;min-width:0}
     .rs-ava{width:1.35em;height:1.35em;border-radius:.35em;background:#3f8cd5;position:relative;margin-top:.12em}
     .rs-ava:before{content:"";position:absolute;inset:.28em;border:.12em solid #fff;border-radius:.16em}
-    .rs-bubble{width:max-content;max-width:88%;height:fit-content;padding:.5em .62em;border:1px solid #dce7ee;border-radius:.75em;background:#fff;color:#3d5363;font-size:.86em;line-height:1.32}
+    .rs-bubble{width:auto;max-width:92%;min-width:0;height:fit-content;padding:.5em .62em;border:1px solid #dce7ee;border-radius:.75em;background:#fff;color:#3d5363;font-size:.92em;line-height:1.32;white-space:normal;overflow-wrap:anywhere}
     .rs-bubble.me{justify-self:end;margin-left:auto;background:#edf6fe;border-color:#d4e8f7}
     .rs-cta{margin-top:auto;padding:.62em;border-radius:.62em;background:#3f8cd5;color:#fff;text-align:center;font-weight:800;font-size:.9em}
     .rs-actions{display:grid;grid-template-columns:.72fr 1.28fr;gap:.4em;margin-top:auto}
@@ -1549,8 +1550,16 @@
     }
 
     /* Opening slide: animated app inside a real phone frame */
+    .hero {
+      grid-template-columns: minmax(0, 1.18fr) minmax(230px, 276px) !important;
+      gap: 28px !important;
+      align-items: center;
+    }
     .hero .logoCard.app-phone-stage {
       position: relative;
+      width: 100%;
+      max-width: 276px;
+      justify-self: end;
       min-height: 0;
       padding: 0;
       overflow: visible;
@@ -1566,8 +1575,11 @@
 
     .hero-phone-shell {
       position: relative;
-      height: clamp(560px, 82vh, 780px);
-      aspect-ratio: 9 / 19.5;
+      height: clamp(420px, 58vh, 540px);
+      max-height: calc(100dvh - 168px);
+      width: auto;
+      aspect-ratio: 9 / 18;
+      margin-inline: auto;
       padding: 7px;
       border: 3px solid #263641;
       border-radius: 38px;
@@ -3868,19 +3880,41 @@
         }, 720);
       }
 
+      function ensurePresenterChrome() {
+        const top = el.querySelector('.top');
+        if (!top) return;
+        let who = document.getElementById('presentWho');
+        if (!who) {
+          who = document.createElement('div');
+          who.id = 'presentWho';
+          who.className = 'present-who';
+          who.setAttribute('aria-label', 'Quien presenta');
+        }
+        let timer = document.getElementById('presentTimer');
+        if (!timer) {
+          timer = document.createElement('div');
+          timer.id = 'presentTimer';
+          timer.className = 'presentation-timer';
+          timer.setAttribute('aria-label', 'Tiempo restante');
+        }
+        let meta = top.querySelector('.top-meta');
+        if (!meta) {
+          meta = document.createElement('div');
+          meta.className = 'top-meta';
+          top.appendChild(meta);
+        }
+        meta.append(who, timer);
+        const introOpen = document.getElementById('introSequence')?.classList.contains('show')
+          && !document.getElementById('introSequence')?.classList.contains('is-done');
+        syncPresenter(logicalSlideNumber(), introOpen);
+        if (typeof drawPresentTimer === 'function') drawPresentTimer();
+      }
+
       render = function enhancedRender() {
         const direction = idx < lastRenderedIndex ? -1 : 1;
         el.classList.remove('is-arming','reveals-ready');
         originalRender();
-        (function placeTopMeta(){
-          const top=el.querySelector('.top');
-          const who=document.getElementById('presentWho');
-          const timer=document.getElementById('presentTimer');
-          if(!top||!who||!timer)return;
-          let meta=top.querySelector('.top-meta');
-          if(!meta){meta=document.createElement('div');meta.className='top-meta';top.appendChild(meta);}
-          meta.append(who,timer);
-        })();
+        ensurePresenterChrome();
         prepareSlideReveals(revealAllOnRender);
         revealAllOnRender = false;
         lastRenderedIndex = idx;
@@ -3930,15 +3964,7 @@
 
       window.__afterIntro = function() {
         try {
-          (function placeTopMeta(){
-            const top=el.querySelector('.top');
-            const who=document.getElementById('presentWho');
-            const timer=document.getElementById('presentTimer');
-            if(!top||!who||!timer)return;
-            let meta=top.querySelector('.top-meta');
-            if(!meta){meta=document.createElement('div');meta.className='top-meta';top.appendChild(meta);}
-            meta.append(who,timer);
-          })();
+          ensurePresenterChrome();
           prepareSlideReveals(false);
           enhanceHeroApp();
         } catch (err) {
@@ -3947,9 +3973,11 @@
       };
 
       if (!(document.getElementById('introSequence')?.classList.contains('show'))) {
+        ensurePresenterChrome();
         prepareSlideReveals(false);
         playSlideEntry(1);
       } else {
+        ensurePresenterChrome();
         enhanceHeroApp();
       }
     });
@@ -4097,4 +4125,4 @@ if((!initialHash||initialHash==='#1')&&idx===0)runSpeakerIntro();
 else if(introSequence){introSequence.classList.add('is-done');introSequence.setAttribute('aria-hidden','true')}
 document.getElementById('prev').onclick=()=>navigate(-1);
 document.getElementById('next').onclick=()=>navigate(1);
-const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');const presentTimer=document.getElementById('presentTimer');let timerRemaining=600,timerRun=null;function drawPresentTimer(){const mm=String(Math.floor(timerRemaining/60)).padStart(2,'0'),ss=String(timerRemaining%60).padStart(2,'0');presentTimer.textContent=`${mm}:${ss}`;presentTimer.style.color=timerRemaining<=0?'#C33C3C':timerRemaining<=60?'#A66A00':'#526D7E'}drawPresentTimer();setTimeout(()=>{timerRun=setInterval(()=>{if(timerRemaining>0)timerRemaining--;drawPresentTimer();if(timerRemaining<=0)clearInterval(timerRun)},1000)},5000);</script></body></html>
+const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');let timerRemaining=600,timerRun=null;function drawPresentTimer(){const node=document.getElementById('presentTimer');if(!node)return;const mm=String(Math.floor(timerRemaining/60)).padStart(2,'0'),ss=String(timerRemaining%60).padStart(2,'0');node.textContent=`${mm}:${ss}`;node.style.color=timerRemaining<=0?'#C33C3C':timerRemaining<=60?'#A66A00':'#526D7E'}drawPresentTimer();setTimeout(()=>{timerRun=setInterval(()=>{if(timerRemaining>0)timerRemaining--;drawPresentTimer();if(timerRemaining<=0)clearInterval(timerRun)},1000)},5000);</script></body></html>
