@@ -3425,9 +3425,13 @@
       });
     }
 
+    let heroEnhancing = false;
     function enhanceHeroApp() {
+      if (heroEnhancing) return;
       const card = document.querySelector('.hero .logoCard');
       if (!card) return;
+      heroEnhancing = true;
+      try {
 
       if (!card.dataset.appPhoneBuilt) {
         card.dataset.appPhoneBuilt = 'true';
@@ -3536,6 +3540,9 @@
       if (card.dataset.appPhoneStarted) return;
       card.dataset.appPhoneStarted = 'true';
       requestAnimationFrame(() => playHeroPrototypeRoute(card));
+      } finally {
+        heroEnhancing = false;
+      }
     }
 
     function playHeroPrototypeRoute(card) {
@@ -3712,20 +3719,19 @@
     }
 
     const prototypePhoneObserver = new MutationObserver(enhancePrototypePhones);
-    prototypePhoneObserver.observe(document.documentElement, { childList: true, subtree: true });
     const closingVisualObserver = new MutationObserver(enhanceClosingVisuals);
-    closingVisualObserver.observe(document.documentElement, { childList: true, subtree: true });
     const bankValueObserver = new MutationObserver(enhanceBankValueSlide);
-    bankValueObserver.observe(document.documentElement, { childList: true, subtree: true });
     const heroAppObserver = new MutationObserver(enhanceHeroApp);
-    heroAppObserver.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class']
-    });
 
     document.addEventListener('DOMContentLoaded', () => {
+      const slideRoot = document.getElementById('slide');
+      if (slideRoot) {
+        const slideObs = { childList: true, subtree: true };
+        prototypePhoneObserver.observe(slideRoot, slideObs);
+        closingVisualObserver.observe(slideRoot, slideObs);
+        bankValueObserver.observe(slideRoot, slideObs);
+        heroAppObserver.observe(slideRoot, slideObs);
+      }
       const resetButton = document.getElementById('reset');
       if (resetButton) {
         resetButton.onclick = () => {
@@ -3800,7 +3806,8 @@
       const originalRender = render;
 
       function updateSpeakerCount() {
-        if (introSequence && document.body.contains(introSequence)) return;
+        const intro = document.getElementById('introSequence');
+        if (intro?.classList.contains('show') && !intro.classList.contains('is-done')) return;
         const logical = logicalSlideNumber();
         count.textContent = revealGroups.length > 1
           ? `${logical}/${logicalSlideTotal} · ${revealStep}/${revealGroups.length}`
@@ -3921,9 +3928,29 @@
         render();
       };
 
-      if (!(introSequence && document.body.contains(introSequence))) {
+      window.__afterIntro = function() {
+        try {
+          (function placeTopMeta(){
+            const top=el.querySelector('.top');
+            const who=document.getElementById('presentWho');
+            const timer=document.getElementById('presentTimer');
+            if(!top||!who||!timer)return;
+            let meta=top.querySelector('.top-meta');
+            if(!meta){meta=document.createElement('div');meta.className='top-meta';top.appendChild(meta);}
+            meta.append(who,timer);
+          })();
+          prepareSlideReveals(false);
+          enhanceHeroApp();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      if (!(document.getElementById('introSequence')?.classList.contains('show'))) {
         prepareSlideReveals(false);
         playSlideEntry(1);
+      } else {
+        enhanceHeroApp();
       }
     });
   </script>
@@ -3989,7 +4016,7 @@
 {stage:6,time:'9:28–9:36',k:'15 · CIERRE',body:`<div class="close-route" style="text-align:center"><div class="logoIcon" style="margin:0 auto 24px">✓</div><h1 style="font-size:clamp(56px,7vw,104px);line-height:.9;margin:0">RUTA SEGURA<br><span style="color:var(--blue)">INTERVIENE</span></h1><p style="font-size:22px;color:var(--muted)">Ordena antecedentes · coordina responsables · reúne evidencia.</p></div>`},
 {stage:6,time:'9:36–9:44',k:'15 · CIERRE',body:`<div class="close-bank" style="text-align:center"><div style="font-size:80px;margin-bottom:18px">🏦</div><h1 style="font-size:clamp(56px,7vw,104px);line-height:.9;margin:0">EL BANCO<br><span style="color:var(--blue)">REINCORPORA</span></h1><p style="font-size:22px;color:var(--muted)">Recibe el expediente, valida la actualización y devuelve el caso al flujo.</p></div>`},
 {stage:6,time:'9:44–9:52',k:'15 · CIERRE',body:`<div class="close-ok" style="text-align:center"><div style="font-size:80px;margin-bottom:18px;color:var(--green)">✓</div><h1 style="font-size:clamp(56px,7.2vw,110px);line-height:.9;margin:0;color:#1E9B43">EVALUACIÓN RETOMADA</h1><p style="font-size:22px;color:var(--muted)">La evaluación continúa con información correcta antes de perder vigencia.</p></div>`},
-{stage:6,time:'9:52–10:00',k:'15 · CIERRE',body:`<div class="close-win"><h1 style="text-align:center;font-size:52px;line-height:.95;margin:0 0 22px">Cuando la operación sigue viva,<br><span style="color:var(--blue)">ambos ganan.</span></h1><div class="story"><section class="storyPanel" style="text-align:center;background:#F1F8FF"><div style="font-size:48px">🏦</div><h2 style="font-size:36px;margin:14px 0">Evaluación retomada</h2><p>El banco conserva una operación viable y reduce reprocesos evitables.</p></section><aside class="casebox" style="text-align:center;background:#F3FBF5;border-color:#CBECD4"><div style="font-size:48px">🏠</div><h2 style="font-size:36px;margin:14px 0">Proyecto de vida en marcha</h2><p>Carolina puede continuar con su casa propia: el dato correcto llegó a tiempo.</p></aside></div><div class="callout" style="margin-top:14px;text-align:center"><b>Éxito =</b> mantener viva la operación + demostrar valor para el banco + reducir costo por caso al escalar.</div></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=15;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);location.hash=`#${idx+1}`}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
+{stage:6,time:'9:52–10:00',k:'15 · CIERRE',body:`<div class="close-win"><h1 style="text-align:center;font-size:52px;line-height:.95;margin:0 0 22px">Cuando la operación sigue viva,<br><span style="color:var(--blue)">ambos ganan.</span></h1><div class="story"><section class="storyPanel" style="text-align:center;background:#F1F8FF"><div style="font-size:48px">🏦</div><h2 style="font-size:36px;margin:14px 0">Evaluación retomada</h2><p>El banco conserva una operación viable y reduce reprocesos evitables.</p></section><aside class="casebox" style="text-align:center;background:#F3FBF5;border-color:#CBECD4"><div style="font-size:48px">🏠</div><h2 style="font-size:36px;margin:14px 0">Proyecto de vida en marcha</h2><p>Carolina puede continuar con su casa propia: el dato correcto llegó a tiempo.</p></aside></div><div class="callout" style="margin-top:14px;text-align:center"><b>Éxito =</b> mantener viva la operación + demostrar valor para el banco + reducir costo por caso al escalar.</div></div>`}];let idx=0;const el=document.getElementById('slide'),bar=document.getElementById('bar'),count=document.getElementById('count');function stageHTML(active){return `<div class="stagebar">${stages.map((s,i)=>`<span class="stage ${i===active?'on':''}">${s}</span>`).join('')}</div>`}const logicalSlideTotal=15;function whoPresents(logical,intro){if(intro||logical<=0)return'Cris';if(logical<=3)return'Cris';if(logical<=7)return'Vale';if(logical<=11)return'Erick';return'Tami'}function syncPresenter(logical,intro){const n=document.getElementById('presentWho');if(n)n.textContent=whoPresents(logical,intro);}function logicalSlideNumber(){return idx>=14?15:idx+1}function render(){const s=slides[idx],logical=logicalSlideNumber();el.innerHTML=`<header class="top"><div class="kicker">${s.k}</div>${stageHTML(s.stage)}<div class="time">${s.time}</div></header><section class="main">${s.title?`<div><h1 class="title">${s.title}</h1></div>`:''}${s.body}</section><footer class="footer"><span class="brand">RUTA SEGURA</span><span>${logical} / ${logicalSlideTotal}</span></footer>`;bar.style.width=(logical/logicalSlideTotal*100)+'%';count.textContent=`${logical}/${logicalSlideTotal}`;syncPresenter(logical,false);const h='#'+(idx+1);if(location.hash!==h)location.hash=h}function go(n){idx=Math.max(0,Math.min(slides.length-1,n));render()}document.getElementById('prev').onclick=()=>{if(typeof introActive==='function'&&introActive()){introPrev();return}if(idx===0&&typeof reopenIntro==='function'){reopenIntro(true);return}go(idx-1)};document.getElementById('next').onclick=()=>{if(typeof introActive==='function'&&introActive()){introNext();return}go(idx+1)};document.getElementById('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();/* navigation handled by capture listener */addEventListener('hashchange',()=>{if(typeof introActive==='function'&&introActive())return;const n=parseInt(location.hash.slice(1),10);if(n>=1&&n<=slides.length&&n-1!==idx){idx=n-1;render()}});const initialHash=location.hash;const n=parseInt(location.hash.slice(1));if(n>=1&&n<=slides.length)idx=n-1;render();const introSequence=document.getElementById('introSequence');
 const introStates=[...document.querySelectorAll('[data-intro]')];
 const introOrder=['dream','evaluation','paperwork','offers','problem','paused','risk'];
 let introStep=0;
@@ -4003,19 +4030,30 @@ function setIntroStep(step){
   syncPresenter(0,true);
 }
 function finishIntro(){
-  if(!introSequence)return;
+  if(!introSequence||introSequence.classList.contains('is-done'))return;
   introSequence.classList.remove('show');
   introSequence.classList.add('is-done');
   introSequence.setAttribute('aria-hidden','true');
+  introSequence.style.setProperty('display','none','important');
+  document.querySelectorAll('.hero .essence').forEach(node=>node.classList.add('reveal-item'));
   idx=0;
-  render();
+  count.textContent='1/'+logicalSlideTotal
+  bar.style.width=(1/logicalSlideTotal*100)+'%';
+  syncPresenter(1,false);
+  const nextHash='#1';
+  if(location.hash!==nextHash) location.hash=nextHash;
+  setTimeout(()=>{
+    if(typeof window.__afterIntro==='function'){
+      try{window.__afterIntro()}catch(err){console.error(err)}
+    }
+  },0);
 }
 function reopenIntro(atEnd){
   if(!introSequence)return;
   introSequence.classList.remove('is-done','exit');
+  introSequence.style.removeProperty('display');
   introSequence.classList.add('show');
   introSequence.setAttribute('aria-hidden','false');
-  introSequence.removeAttribute('style');
   setIntroStep(atEnd===false?0:introOrder.length-1);
 }
 function introNext(){
@@ -4042,7 +4080,11 @@ window.addEventListener('keydown',e=>{
   if(e.key.toLowerCase()==='f')document.getElementById('full').click();
 },true);
 if(introSequence){
-  introSequence.addEventListener('click',()=>{if(introActive())introNext()});
+  introSequence.addEventListener('click',()=>{
+    if(introSequence.classList.contains('is-done'))return;
+    if(introStep>=introOrder.length-1) finishIntro();
+    else introNext();
+  });
 }
 function runSpeakerIntro(){
   if(!introSequence)return;
