@@ -335,15 +335,23 @@ body.intro-open #presentTimer{
 body.intro-open #presentWho{right:92px !important}
 body.intro-open #presentTimer{right:22px !important}
 .time-pulse{
-  position:fixed;inset:0;z-index:400;pointer-events:none;
-  animation:timePulse .78s ease-out forwards;
+  position:fixed;inset:0;z-index:10000;pointer-events:none;
+  animation:timePulse 1.15s ease-out forwards;
 }
-.time-pulse.warn{background:rgba(198,40,40,.18)}
-.time-pulse.urgent{background:rgba(198,40,40,.28)}
-.time-pulse.end{background:rgba(198,40,40,.38)}
+.time-pulse.warn{--pulse:rgba(198,40,40,.42)}
+.time-pulse.urgent{--pulse:rgba(198,40,40,.55)}
+.time-pulse.end{--pulse:rgba(180,28,28,.62)}
 @keyframes timePulse{
-  0%{opacity:1}
-  100%{opacity:0}
+  0%{background:var(--pulse);box-shadow:inset 0 0 0 22px rgba(180,28,28,.9)}
+  28%{background:rgba(198,40,40,.08);box-shadow:inset 0 0 0 0 transparent}
+  52%{background:var(--pulse);box-shadow:inset 0 0 0 16px rgba(180,28,28,.75)}
+  100%{background:transparent;box-shadow:inset 0 0 0 0 transparent}
+}
+.presentation-timer.is-pulsing{
+  background:#C33C3C !important;
+  color:#fff !important;
+  border-color:#C33C3C !important;
+  box-shadow:0 0 0 8px rgba(195,60,60,.35) !important;
 }
 </style>
 </head><body><div id="introSequence" class="intro-sequence" aria-hidden="false">
@@ -4185,4 +4193,4 @@ if((!initialHash||initialHash==='#1')&&idx===0)runSpeakerIntro();
 else if(introSequence){introSequence.classList.add('is-done');introSequence.setAttribute('aria-hidden','true');if(typeof startPresentationTimer==='function')startPresentationTimer()}
 document.getElementById('prev').onclick=()=>navigate(-1);
 document.getElementById('next').onclick=()=>navigate(1);
-const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');const TIMER_SECONDS=600;let timerStartedAt=null;let lastPulseMark=null;function startPresentationTimer(){if(!timerStartedAt)timerStartedAt=Date.now()}function timerRemainingNow(){if(!timerStartedAt)return TIMER_SECONDS;return Math.max(0,TIMER_SECONDS-Math.floor((Date.now()-timerStartedAt)/1000))}function pulseScreen(kind){const flash=document.createElement('div');flash.className='time-pulse '+(kind||'warn');flash.setAttribute('aria-hidden','true');document.body.appendChild(flash);setTimeout(()=>flash.remove(),820)}function maybePulseTime(left){if(!timerStartedAt)return;if(left<=0){if(lastPulseMark!==0){lastPulseMark=0;pulseScreen('end')}return}if(left<=170){if(lastPulseMark===null||lastPulseMark-left>=15){lastPulseMark=left;pulseScreen(left<=60?'urgent':'warn')}}}function drawPresentTimer(){const node=document.getElementById('presentTimer');if(!node)return;const left=timerRemainingNow();const mm=String(Math.floor(left/60)).padStart(2,'0'),ss=String(left%60).padStart(2,'0');node.textContent=`${mm}:${ss}`;node.style.color=!timerStartedAt?'#526D7E':left<=60?'#C33C3C':left<=170?'#A66A00':'#526D7E';maybePulseTime(left)}if(!window.__rutaTimerStarted){window.__rutaTimerStarted=true;drawPresentTimer();setInterval(drawPresentTimer,250)}</script></body></html>
+const controlsAuto=document.querySelector('.controls');function setControlsFromPointer(e){if(!controlsAuto)return;const nearBottom=e.clientY>=window.innerHeight-96;controlsAuto.classList.toggle('auto-hide',!nearBottom)}window.addEventListener('mousemove',setControlsFromPointer,{passive:true});controlsAuto&&controlsAuto.classList.add('auto-hide');const TIMER_SECONDS=600;let timerStartedAt=null;let lastPulseMark=null;function startPresentationTimer(){if(!timerStartedAt)timerStartedAt=Date.now()}function timerRemainingNow(){if(!timerStartedAt)return TIMER_SECONDS;return Math.max(0,TIMER_SECONDS-Math.floor((Date.now()-timerStartedAt)/1000))}function pulseScreen(kind){const flash=document.createElement('div');flash.className='time-pulse '+(kind||'warn');flash.setAttribute('aria-hidden','true');document.body.appendChild(flash);const badge=document.getElementById('presentTimer');if(badge){badge.classList.add('is-pulsing');setTimeout(()=>badge.classList.remove('is-pulsing'),1200)}setTimeout(()=>flash.remove(),1200)}function maybePulseTime(left){if(!timerStartedAt)return;if(left<=0){if(lastPulseMark!==0){lastPulseMark=0;pulseScreen('end')}return}if(left<=150){if(lastPulseMark===null||lastPulseMark-left>=12){lastPulseMark=left;pulseScreen(left<=60?'urgent':'warn')}}}function drawPresentTimer(){const node=document.getElementById('presentTimer');if(!node)return;const left=timerRemainingNow();const mm=String(Math.floor(left/60)).padStart(2,'0'),ss=String(left%60).padStart(2,'0');node.textContent=`${mm}:${ss}`;node.style.color=!timerStartedAt?'#526D7E':left<=60?'#C33C3C':left<=150?'#A66A00':'#526D7E';maybePulseTime(left)}if(!window.__rutaTimerStarted){window.__rutaTimerStarted=true;drawPresentTimer();setInterval(drawPresentTimer,250)}</script></body></html>
