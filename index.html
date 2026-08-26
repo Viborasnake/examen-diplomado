@@ -497,7 +497,7 @@
     }
 
     .app-phone-stage::before {
-      content: "APP MÓVIL · CASO EN CURSO";
+      content: "PROTOTIPO · RUTA COMPLETA";
       position: absolute;
       top: 18px;
       left: 20px;
@@ -867,6 +867,441 @@
 
       .hero-app-progress i {
         width: 74%;
+      }
+    }
+
+    .prototype-flow {
+      position: absolute;
+      inset: 0;
+      background: #f4f9fd;
+    }
+
+    .prototype-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 36px 12px 20px;
+      overflow: hidden;
+      background: #f4f9fd;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity .38s ease, transform .48s cubic-bezier(.2,.75,.25,1);
+      pointer-events: none;
+    }
+
+    .prototype-screen.proto-active {
+      z-index: 3;
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .prototype-screen.proto-leaving {
+      z-index: 2;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    .proto-brandbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .proto-brand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #326f9e;
+      font-size: 8px;
+      font-weight: var(--fw-title);
+    }
+
+    .proto-brand i {
+      width: 17px;
+      height: 17px;
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      background: #63a8dc;
+      color: #fff;
+      font-style: normal;
+    }
+
+    .proto-tools {
+      color: #7190a4;
+      font-size: 7px;
+      letter-spacing: .45em;
+    }
+
+    .proto-step {
+      display: flex;
+      justify-content: space-between;
+      color: #718a9b;
+      font-size: 6px;
+      font-weight: var(--fw-label);
+    }
+
+    .proto-stepbar {
+      height: 3px;
+      margin: 6px 0 17px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #d9e4ec;
+    }
+
+    .proto-stepbar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #5ca4da;
+      transition: width .65s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .proto-eyebrow {
+      color: #5e93bb;
+      font-size: 6px;
+      font-weight: var(--fw-label);
+      letter-spacing: .12em;
+    }
+
+    .prototype-screen h3 {
+      margin: 7px 0 6px;
+      font-size: 16px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+
+    .proto-lead {
+      margin: 0 0 11px;
+      color: #728a9a;
+      font-size: 7px;
+      line-height: 1.35;
+    }
+
+    .proto-chat {
+      display: grid;
+      gap: 6px;
+    }
+
+    .proto-bubble {
+      max-width: 88%;
+      padding: 7px 8px;
+      border: 1px solid #dce7ee;
+      border-radius: 10px;
+      background: #fff;
+      color: #476273;
+      font-size: 6px;
+      line-height: 1.35;
+    }
+
+    .proto-bubble b {
+      color: #294355;
+    }
+
+    .proto-bubble.me {
+      justify-self: end;
+      border-color: #d4e8f7;
+      background: #eaf5fd;
+    }
+
+    .proto-reveal {
+      opacity: 0;
+      transform: translateY(7px);
+    }
+
+    .proto-active .proto-reveal:nth-child(2) {
+      animation: protoItemIn .35s .45s ease forwards;
+    }
+
+    .proto-active .proto-reveal:nth-child(3) {
+      animation: protoItemIn .35s .95s ease forwards;
+    }
+
+    .proto-active .proto-reveal:nth-child(4) {
+      animation: protoItemIn .35s 1.35s ease forwards;
+    }
+
+    .proto-card {
+      padding: 10px;
+      border: 1px solid #dce7ee;
+      border-radius: 11px;
+      background: #fff;
+      box-shadow: 0 8px 18px #20384a0b;
+    }
+
+    .proto-card + .proto-card {
+      margin-top: 7px;
+    }
+
+    .proto-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e7edf2;
+      font-size: 7px;
+      font-weight: var(--fw-label);
+    }
+
+    .proto-summary {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .proto-summary small {
+      color: #879aa7;
+      font-size: 5px;
+    }
+
+    .proto-summary b {
+      display: block;
+      margin-top: 2px;
+      color: #405a6b;
+      font-size: 6px;
+    }
+
+    .proto-file {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      color: #4a6e85;
+      font-size: 6px;
+      font-weight: var(--fw-label);
+    }
+
+    .proto-button {
+      position: absolute;
+      right: 12px;
+      bottom: 22px;
+      left: 12px;
+      padding: 9px;
+      border-radius: 7px;
+      background: #5aa1d7;
+      color: #fff;
+      font-size: 7px;
+      font-weight: var(--fw-label);
+      text-align: center;
+      box-shadow: 0 7px 16px #3f8cd526;
+    }
+
+    .proto-success-wrap {
+      display: grid;
+      align-content: center;
+      height: calc(100% - 45px);
+    }
+
+    .proto-success-icon {
+      width: 46px;
+      height: 46px;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #eaf8ee;
+      color: #48a86a;
+      transform: scale(.65);
+      opacity: 0;
+    }
+
+    .proto-success-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .proto-active .proto-success-icon {
+      animation: protoSuccess .5s .16s cubic-bezier(.2,.8,.25,1) forwards;
+    }
+
+    .proto-case-id {
+      display: inline-block;
+      width: max-content;
+      margin-top: 8px;
+      padding: 5px 7px;
+      border: 1px solid #dce7ee;
+      border-radius: 6px;
+      background: #fff;
+      color: #597386;
+      font-size: 6px;
+    }
+
+    .proto-track-card {
+      padding: 10px;
+      border: 1px solid #dce7ee;
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .proto-track-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 9px;
+      font-size: 7px;
+      font-weight: var(--fw-label);
+    }
+
+    .proto-track-head span {
+      padding: 4px 6px;
+      border-radius: 99px;
+      background: #fff5df;
+      color: #966c25;
+      font-size: 5px;
+    }
+
+    .proto-timeline {
+      display: grid;
+      gap: 8px;
+    }
+
+    .proto-timeline div {
+      position: relative;
+      min-height: 24px;
+      padding-left: 23px;
+      opacity: 0;
+      transform: translateY(5px);
+    }
+
+    .proto-timeline div::before {
+      content: "✓";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #60ae7b;
+      color: #fff;
+      font-size: 7px;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    .proto-timeline div:last-child::before {
+      content: "◷";
+      background: #e7f2fa;
+      color: #4d97cd;
+    }
+
+    .proto-timeline b {
+      display: block;
+      font-size: 6px;
+    }
+
+    .proto-timeline small {
+      display: block;
+      margin-top: 2px;
+      color: #8296a2;
+      font-size: 5px;
+    }
+
+    .proto-active .proto-timeline div:nth-child(1) { animation: protoItemIn .3s .2s ease forwards; }
+    .proto-active .proto-timeline div:nth-child(2) { animation: protoItemIn .3s .42s ease forwards; }
+    .proto-active .proto-timeline div:nth-child(3) { animation: protoItemIn .3s .64s ease forwards; }
+    .proto-active .proto-timeline div:nth-child(4) { animation: protoItemIn .3s .86s ease forwards; }
+
+    .proto-admin .proto-card {
+      padding: 9px;
+    }
+
+    .proto-admin-row {
+      display: grid;
+      grid-template-columns: 1fr .8fr;
+      gap: 6px;
+      padding: 7px 0;
+      border-bottom: 1px solid #e7edf2;
+      color: #587184;
+      font-size: 5px;
+    }
+
+    .proto-admin h4 {
+      margin: 9px 0 5px;
+      font-size: 11px;
+    }
+
+    .proto-alert {
+      margin: 7px 0;
+      padding: 7px;
+      border-radius: 7px;
+      background: #fff7e8;
+      color: #886221;
+      font-size: 6px;
+      line-height: 1.35;
+    }
+
+    .proto-verified {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 7px;
+      background: #eaf8ee;
+      color: #2f7b42;
+      font-size: 6px;
+      font-weight: var(--fw-label);
+      opacity: 0;
+      transform: translateY(7px);
+    }
+
+    .proto-active .proto-verified {
+      animation: protoItemIn .4s .62s ease forwards;
+    }
+
+    .prototype-dots {
+      position: absolute;
+      z-index: 10;
+      right: 0;
+      bottom: 12px;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    .prototype-dots i {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #c8d7e2;
+      transition: width .3s ease, background .3s ease;
+    }
+
+    .prototype-dots i.on {
+      width: 14px;
+      border-radius: 99px;
+      background: var(--blue);
+    }
+
+    @keyframes protoItemIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes protoSuccess {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .prototype-screen,
+      .proto-reveal,
+      .proto-success-icon,
+      .proto-timeline div,
+      .proto-verified,
+      .prototype-dots i {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .proto-reveal,
+      .proto-success-icon,
+      .proto-timeline div,
+      .proto-verified {
+        opacity: 1 !important;
+        transform: none !important;
       }
     }
 
@@ -1355,37 +1790,91 @@
         card.dataset.appPhoneBuilt = 'true';
         card.classList.add('app-phone-stage');
         card.innerHTML = `
-          <div class="hero-phone-shell" aria-label="Aplicación Ruta Segura abierta en el caso de Carolina">
+          <div class="hero-phone-shell" aria-label="Ruta animada del prototipo Ruta Segura">
             <div class="hero-app-screen">
-              <div class="hero-app-splash">
-                <div class="app-mark">◇</div>
-                <strong>ruta<span>segura</span></strong>
-                <small>Tu caso, en una sola ruta.</small>
-              </div>
-              <div class="hero-app-home">
-                <div class="hero-app-bar">
-                  <div class="hero-app-brand">◇ rutasegura</div>
-                  <div class="hero-app-avatar">CP</div>
-                </div>
-                <p class="hero-app-greeting">Hola, Carolina</p>
-                <h3>Tu caso hipotecario</h3>
-                <section class="hero-app-case">
-                  <small>CASO RS–2026–0148</small>
-                  <strong>Corrección en curso</strong>
-                  <div class="hero-app-status"><i></i>Actualización recibida</div>
-                  <div class="hero-app-progress"><i></i></div>
+              <div class="prototype-flow">
+                <section class="prototype-screen proto-active" data-prototype-screen="0">
+                  <div class="proto-brandbar"><div class="proto-brand"><i>◇</i>rutasegura</div><div class="proto-tools">▥ ▫</div></div>
+                  <div class="proto-step"><span>Paso 1 de 4</span><span>Tu relato</span></div>
+                  <div class="proto-stepbar"><i style="width:25%"></i></div>
+                  <div class="proto-eyebrow">ENTENDER EL PROBLEMA</div>
+                  <h3>Hablemos de lo que pasó.</h3>
+                  <p class="proto-lead">Con algunas preguntas simples prepararemos tu caso.</p>
+                  <div class="proto-chat">
+                    <div class="proto-bubble"><b>Cuéntame con tus palabras qué ocurrió con tu crédito.</b></div>
+                    <div class="proto-bubble me proto-reveal">Todavía aparece una deuda que pagué hace dos meses.</div>
+                    <div class="proto-bubble proto-reveal"><b>¿Qué institución informó la deuda?</b></div>
+                    <div class="proto-bubble me proto-reveal">Tarjeta Andes.</div>
+                  </div>
+                  <div class="proto-button">Continuar →</div>
                 </section>
-                <div class="hero-app-events">
-                  <div class="hero-app-event">
-                    <svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg>
-                    <div><b>Antecedentes revisados</b><span>Comprobante validado</span></div>
+
+                <section class="prototype-screen" data-prototype-screen="1">
+                  <div class="proto-brandbar"><div class="proto-brand"><i>◇</i>rutasegura</div><div class="proto-tools">▥ ▫</div></div>
+                  <div class="proto-step"><span>Paso 3 de 4</span><span>Revisar</span></div>
+                  <div class="proto-stepbar"><i style="width:75%"></i></div>
+                  <div class="proto-eyebrow">REVISAR Y ENVIAR</div>
+                  <h3>Tu caso está listo para revisar.</h3>
+                  <p class="proto-lead">Organizamos lo que nos contaste en una solicitud clara.</p>
+                  <div class="proto-card">
+                    <div class="proto-card-title"><span>◆ Resumen generado</span><small>Revísalo antes de continuar</small></div>
+                    <div class="proto-summary">
+                      <div><small>Problema identificado</small><b>Deuda pagada que continúa apareciendo</b></div>
+                      <div><small>Consecuencia</small><b>Crédito hipotecario detenido</b></div>
+                      <div><small>Institución responsable</small><b>Tarjeta Andes</b></div>
+                    </div>
+                    <div class="proto-file">▧ comprobante_pago.pdf</div>
                   </div>
-                  <div class="hero-app-event">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>
-                    <div><b>Banco verificando</b><span>Próxima actualización visible</span></div>
+                  <div class="proto-button">Enviar solicitud →</div>
+                </section>
+
+                <section class="prototype-screen" data-prototype-screen="2">
+                  <div class="proto-brandbar"><div class="proto-brand"><i>◇</i>rutasegura</div><div class="proto-tools">▥ ▫</div></div>
+                  <div class="proto-step"><span>Paso 4 de 4</span><span>Enviar</span></div>
+                  <div class="proto-stepbar"><i style="width:100%"></i></div>
+                  <div class="proto-success-wrap">
+                    <div class="proto-success-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg></div>
+                    <div class="proto-eyebrow">SOLICITUD ENVIADA</div>
+                    <h3>Tu caso fue creado correctamente.</h3>
+                    <span class="proto-case-id">Caso RS–2026–0148</span>
+                    <p class="proto-lead" style="margin-top:12px">Revisaremos los antecedentes antes de dirigir la solicitud.</p>
                   </div>
-                </div>
-                <nav class="hero-app-nav"><b>Inicio</b><span>Caso</span><span>Ayuda</span></nav>
+                  <div class="proto-button">Ver seguimiento →</div>
+                </section>
+
+                <section class="prototype-screen" data-prototype-screen="3">
+                  <div class="proto-brandbar"><div class="proto-brand"><i>◇</i>rutasegura</div><div class="proto-tools">▥ ▫</div></div>
+                  <div class="proto-eyebrow">CASO RS–2026–0148</div>
+                  <h3>Tu caso está en investigación.</h3>
+                  <p class="proto-lead">Esperamos confirmación para verificar la corrección.</p>
+                  <div class="proto-track-card">
+                    <div class="proto-track-head">Seguimiento del caso <span>En investigación</span></div>
+                    <div class="proto-timeline">
+                      <div><b>Solicitud creada</b><small>Autorización registrada</small></div>
+                      <div><b>Antecedentes revisados</b><small>Comprobante correcto</small></div>
+                      <div><b>Recibida por la institución</b><small>Recepción confirmada</small></div>
+                      <div><b>En investigación</b><small>Validando actualización</small></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="prototype-screen proto-admin" data-prototype-screen="4">
+                  <div class="proto-brandbar"><div class="proto-brand"><i>◇</i>rutasegura · banco</div><div class="proto-tools">▥ ▫</div></div>
+                  <div class="proto-eyebrow">CASOS · PENDIENTE</div>
+                  <h3>Gestión de casos</h3>
+                  <p class="proto-lead">Revisa los antecedentes y verifica la resolución antes de cerrar.</p>
+                  <div class="proto-card">
+                    <div class="proto-card-title">Casos activos</div>
+                    <div class="proto-admin-row"><b>RS–2026–0148</b><span>Carolina</span></div>
+                    <div class="proto-eyebrow" style="margin-top:8px">RS–2026–0148</div>
+                    <h4>Carolina</h4>
+                    <div class="proto-alert"><b>Deuda pagada aún aparece en el informe</b><br>Tarjeta Andes · comprobante disponible</div>
+                    <div class="proto-file">▧ comprobante_pago.pdf</div>
+                    <div class="proto-verified">✓ Resolución verificada<br><span style="font-weight:400">La persona ya fue informada.</span></div>
+                  </div>
+                </section>
+
+                <div class="prototype-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
               </div>
             </div>
           </div>`;
@@ -1396,7 +1885,43 @@
       if (introIsVisible || waitsForReveal || card.dataset.appPhoneStarted) return;
 
       card.dataset.appPhoneStarted = 'true';
-      requestAnimationFrame(() => card.classList.add('app-demo-live'));
+      requestAnimationFrame(() => {
+        card.classList.add('app-demo-live');
+        playHeroPrototypeRoute(card);
+      });
+    }
+
+    function playHeroPrototypeRoute(card) {
+      const screens = [...card.querySelectorAll('[data-prototype-screen]')];
+      const dots = [...card.querySelectorAll('.prototype-dots i')];
+      if (!screens.length) return;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const timings = reducedMotion ? [] : [2700, 2350, 2200, 2850];
+      let activeScreen = reducedMotion ? screens.length - 1 : 0;
+
+      function showScreen(nextIndex) {
+        screens.forEach((screen, screenIndex) => {
+          const wasActive = screen.classList.contains('proto-active');
+          screen.classList.toggle('proto-active', screenIndex === nextIndex);
+          screen.classList.toggle('proto-leaving', wasActive && screenIndex !== nextIndex);
+          if (screenIndex !== nextIndex) setTimeout(() => screen.classList.remove('proto-leaving'), 520);
+        });
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('on', dotIndex === nextIndex));
+        activeScreen = nextIndex;
+      }
+
+      showScreen(activeScreen);
+      if (reducedMotion) return;
+
+      let elapsed = 0;
+      timings.forEach((delay, timingIndex) => {
+        elapsed += delay;
+        setTimeout(() => {
+          if (!card.isConnected) return;
+          showScreen(timingIndex + 1);
+        }, elapsed);
+      });
     }
 
     const closingIcons = {
