@@ -298,6 +298,191 @@
         width: min(235px, 100%);
       }
     }
+
+    .main:has(.journeys) {
+      grid-template-rows: 42% 58%;
+    }
+
+    .journeys {
+      align-self: start;
+      gap: 14px;
+    }
+
+    .journeys .jrow {
+      grid-template-columns: 190px repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .journeys .jlabel {
+      min-height: 92px;
+      padding: 18px;
+      border-radius: 16px;
+    }
+
+    .journeys .jlabel small {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+
+    .journeys .jlabel b {
+      font-size: 20px;
+      line-height: 1.05;
+    }
+
+    .journeys .phase {
+      min-width: 0;
+      min-height: 92px;
+      padding: 16px;
+      border-radius: 16px;
+    }
+
+    .journeys .phase b {
+      display: block;
+      font-size: 13px;
+      line-height: 1.15;
+    }
+
+    .journeys .phase p {
+      margin: 8px 0 0;
+      font-size: 11px;
+      line-height: 1.32;
+    }
+
+    .journeys .jrow:not(.good) {
+      opacity: 0.55;
+      filter: saturate(0.55);
+    }
+
+    .journeys .jrow:not(.good) .phase {
+      background: #f8fafc;
+    }
+
+    .journeys .jrow.good {
+      position: relative;
+      counter-reset: happy-path;
+    }
+
+    .journeys .jrow.good .jlabel {
+      background: linear-gradient(145deg, #2f7fca, #4d9de5);
+      box-shadow: 0 14px 30px #3f8cd52b;
+    }
+
+    .journeys .jrow.good .jlabel small::after {
+      content: " · HAPPY PATH";
+    }
+
+    .journeys .jrow.good .phase {
+      position: relative;
+      z-index: 1;
+      min-height: 124px;
+      padding: 18px 16px 16px;
+      counter-increment: happy-path;
+      background: linear-gradient(180deg, #f4f9ff, #eaf4fd);
+      border: 2px solid #b9d8f3;
+      box-shadow: 0 10px 24px #3f8cd514;
+    }
+
+    .journeys .jrow.good .phase::before {
+      content: "0" counter(happy-path);
+      display: inline-grid;
+      place-items: center;
+      width: 29px;
+      height: 29px;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 10px;
+      font-weight: var(--fw-label);
+      box-shadow: 0 6px 14px #3f8cd533;
+    }
+
+    .journeys .jrow.good .phase:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      right: -16px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: var(--fw-title);
+      line-height: 20px;
+      text-align: center;
+      transform: translateY(-50%);
+      box-shadow: 0 4px 10px #3f8cd533;
+    }
+
+    .journeys .jrow.good .phase b {
+      color: #176eb4;
+      font-size: 16px;
+    }
+
+    .journeys .jrow.good .phase p {
+      color: #587487;
+      font-size: 12px;
+    }
+
+    .journeys .delta {
+      gap: 12px;
+    }
+
+    .journeys .delta article {
+      min-height: 104px;
+      padding: 17px 18px;
+      border-top: 3px solid var(--blue);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px #20384a0d;
+    }
+
+    .journeys .delta small {
+      font-size: 9px;
+    }
+
+    .journeys .delta b {
+      font-size: 19px;
+    }
+
+    .journeys .delta p {
+      margin-top: 5px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 1100px) {
+      .journeys .jrow {
+        grid-template-columns: 165px repeat(5, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .journeys .jrow.good .phase {
+        min-height: 116px;
+        padding-inline: 13px;
+      }
+
+      .journeys .jrow.good .phase:not(:last-child)::after {
+        right: -13px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main:has(.journeys) {
+        grid-template-rows: auto 1fr;
+      }
+
+      .journeys .jrow {
+        grid-template-columns: 1fr;
+      }
+
+      .journeys .jrow.good .phase:not(:last-child)::after {
+        top: auto;
+        right: calc(50% - 10px);
+        bottom: -16px;
+        transform: rotate(90deg);
+      }
+    }
   </style>
   <script>
     document.head.appendChild(document.getElementById('typographic-weight-system'));
