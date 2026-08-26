@@ -299,6 +299,214 @@
       }
     }
 
+    /* Complete five-screen prototype route */
+    .phones.prototype-route {
+      grid-template-columns: repeat(5, minmax(0, clamp(152px, 14vw, 184px)));
+      gap: clamp(12px, 1.45vw, 22px);
+    }
+
+    .prototype-route .phone {
+      border-width: 2.5px;
+      border-radius: 34px;
+    }
+
+    .prototype-route .phone .screen {
+      padding: 14px 12px 18px;
+      border-radius: 25px;
+    }
+
+    .prototype-route .phone .notch {
+      width: 64px;
+      height: 16px;
+      margin-top: -9px;
+      margin-bottom: 11px;
+    }
+
+    .prototype-route .phone .screen .rs {
+      font-size: 9px;
+    }
+
+    .prototype-route .phone .screen h3 {
+      margin: 13px 0 7px;
+      font-size: clamp(14px, 1.22vw, 17px);
+    }
+
+    .prototype-route .phone .screen p {
+      font-size: 7px;
+    }
+
+    .prototype-route .phoneCap {
+      top: -17px;
+      left: 10px;
+      padding: 5px 7px;
+      font-size: 6px;
+      white-space: nowrap;
+    }
+
+    .prototype-route .bubble {
+      margin-top: 6px;
+      padding: 7px 8px;
+      border-radius: 9px;
+      font-size: 6.5px;
+    }
+
+    .prototype-route .bubble.me {
+      margin-left: 18px;
+    }
+
+    .prototype-route .btn {
+      right: 18px;
+      bottom: 20px;
+      left: 18px;
+      padding: 8px;
+      font-size: 7px;
+    }
+
+    .prototype-route .event {
+      grid-template-columns: 16px 1fr;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .prototype-route .dot {
+      width: 15px;
+      height: 15px;
+      font-size: 8px;
+      line-height: 15px;
+    }
+
+    .prototype-route .event b {
+      font-size: 7.5px;
+    }
+
+    .prototype-route .event span {
+      font-size: 6px;
+    }
+
+    .prototype-route .case {
+      margin-top: 10px;
+      padding: 9px;
+    }
+
+    .prototype-route .phone .case small {
+      font-size: 6.5px;
+    }
+
+    .prototype-route .case h4 {
+      margin: 14px 0 8px;
+      font-size: 14px;
+    }
+
+    .prototype-route .ok {
+      padding: 8px;
+      font-size: 6.5px;
+    }
+
+    .review-card {
+      margin-top: 10px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+    }
+
+    .review-card > small,
+    .success-eyebrow {
+      display: block;
+      color: var(--blue);
+      font-size: 6px;
+      font-weight: var(--fw-label);
+      letter-spacing: .08em;
+    }
+
+    .review-row {
+      padding: 7px 0;
+      border-top: 1px solid #e4ebf0;
+    }
+
+    .review-row:first-of-type {
+      margin-top: 6px;
+    }
+
+    .review-row span {
+      display: block;
+      margin-bottom: 2px;
+      color: #8094a2;
+      font-size: 5.5px;
+    }
+
+    .review-row b {
+      display: block;
+      color: #294355;
+      font-size: 6.5px;
+      line-height: 1.18;
+    }
+
+    .review-file,
+    .success-case-id {
+      display: block;
+      margin-top: 7px;
+      padding: 6px 7px;
+      border-radius: 7px;
+      background: #edf6fe;
+      color: #416b89;
+      font-size: 6px;
+      font-weight: var(--fw-support);
+    }
+
+    .review-demo-phone .review-pending,
+    .success-demo-phone .success-pending {
+      opacity: 0;
+      transform: translateY(7px);
+      transition: opacity .3s ease, transform .38s ease;
+    }
+
+    .review-demo-phone .review-shown,
+    .success-demo-phone .success-shown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .success-wrap {
+      margin-top: 28px;
+    }
+
+    .success-check {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 17px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e9f8ed;
+      color: #2f9c58;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .success-demo-phone .success-check.success-shown {
+      animation: protoRouteSuccess .48s cubic-bezier(.2,.8,.25,1.2);
+    }
+
+    @keyframes protoRouteSuccess {
+      0% { transform: scale(.65); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-height: 680px) and (min-width: 901px) {
+      .phones.prototype-route {
+        grid-template-columns: repeat(5, minmax(0, 156px));
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .phones.prototype-route {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+    }
+
     .main:has(.journeys) {
       grid-template-rows: 42% 58%;
     }
@@ -2499,10 +2707,139 @@
       setTimeout(typeCharacter, 700);
     }
 
+    function enhancePrototypeRoute() {
+      const route = document.querySelector('.phones');
+      if (!route || route.dataset.completeRoute) return;
+      route.dataset.completeRoute = 'true';
+      route.classList.add('prototype-route');
+      route.innerHTML = `
+        <div class="phone">
+          <span class="phoneCap">1 · RELATO</span>
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="rs">▣ rutasegura</div>
+            <h3>Hablemos de lo que pasó.</h3>
+            <p>Con algunas preguntas simples prepararemos tu caso.</p>
+            <div class="bubble"><b>Cuéntame qué ocurrió con tu crédito.</b></div>
+            <div class="bubble me">Todavía aparece una deuda que pagué hace dos meses.</div>
+            <div class="bubble"><b>¿Qué institución informó la deuda?</b></div>
+            <div class="bubble me">Tarjeta Andes.</div>
+            <div class="btn">Continuar →</div>
+          </div>
+        </div>
+        <div class="phone">
+          <span class="phoneCap">2 · REVISIÓN</span>
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="rs">▣ rutasegura</div>
+            <h3>Tu caso está listo para revisar.</h3>
+            <p>Organizamos lo que nos contaste en una solicitud clara.</p>
+            <div class="review-card">
+              <small>RESUMEN GENERADO</small>
+              <div class="review-row"><span>Problema identificado</span><b>Deuda pagada que continúa apareciendo</b></div>
+              <div class="review-row"><span>Consecuencia</span><b>Crédito hipotecario detenido</b></div>
+              <div class="review-row"><span>Institución responsable</span><b>Tarjeta Andes</b></div>
+              <div class="review-file">▧ comprobante_pago.pdf</div>
+            </div>
+            <div class="btn">Enviar solicitud →</div>
+          </div>
+        </div>
+        <div class="phone">
+          <span class="phoneCap">3 · SOLICITUD CREADA</span>
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="rs">▣ rutasegura</div>
+            <div class="success-wrap">
+              <div class="success-check">✓</div>
+              <span class="success-eyebrow">SOLICITUD ENVIADA</span>
+              <h3>Tu caso fue creado correctamente.</h3>
+              <span class="success-case-id">Caso RS–2026–0148</span>
+              <p style="margin-top:11px">Revisaremos los antecedentes antes de dirigir la solicitud.</p>
+            </div>
+            <div class="btn">Ver seguimiento →</div>
+          </div>
+        </div>
+        <div class="phone">
+          <span class="phoneCap">4 · SEGUIMIENTO</span>
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="rs">▣ rutasegura</div>
+            <h3>Tu caso está en investigación.</h3>
+            <p>Esperamos confirmación para verificar la corrección.</p>
+            <div class="event"><i class="dot">✓</i><div><b>Solicitud creada</b><span>Autorización registrada</span></div></div>
+            <div class="event"><i class="dot">✓</i><div><b>Antecedentes revisados</b><span>Comprobante correcto</span></div></div>
+            <div class="event"><i class="dot">✓</i><div><b>Recibida por la institución</b><span>Recepción confirmada</span></div></div>
+            <div class="event"><i class="dot wait">◷</i><div><b>En investigación</b><span>Validando actualización</span></div></div>
+          </div>
+        </div>
+        <div class="phone">
+          <span class="phoneCap">5 · CIERRE VERIFICABLE</span>
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="rs">▣ rutasegura · banco</div>
+            <h3>Gestión de casos</h3>
+            <div class="case">
+              <small>CASO RS–2026–0148</small>
+              <h4>Carolina</h4>
+              <p>Deuda pagada aún aparece en el informe.</p>
+              <div class="review-file">▧ comprobante_pago.pdf</div>
+              <div class="ok">✓ Resolución verificada<br><span style="font-weight:400">La persona ya fue informada.</span></div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     function schedulePhoneAnimation(phone, delay, action) {
       setTimeout(() => {
         if (phone?.isConnected) action();
       }, delay);
+    }
+
+    function startPrototypeReviewAnimation(phone) {
+      if (!phone || phone.dataset.reviewAnimated) return;
+      phone.dataset.reviewAnimated = 'true';
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const details = [...phone.querySelectorAll('.review-card > *')];
+      const submit = phone.querySelector('.btn');
+      if (!details.length || !submit) return;
+      phone.classList.add('review-demo-phone');
+      [...details, submit].forEach(element => element.classList.add('review-pending'));
+
+      details.forEach((detail, index) => {
+        schedulePhoneAnimation(phone, 360 + index * 240, () => {
+          detail.classList.remove('review-pending');
+          detail.classList.add('review-shown');
+        });
+      });
+      schedulePhoneAnimation(phone, 360 + details.length * 240, () => {
+        submit.classList.remove('review-pending');
+        submit.classList.add('review-shown');
+      });
+    }
+
+    function startPrototypeSuccessAnimation(phone) {
+      if (!phone || phone.dataset.successAnimated) return;
+      phone.dataset.successAnimated = 'true';
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const parts = [
+        phone.querySelector('.success-check'),
+        phone.querySelector('.success-eyebrow'),
+        phone.querySelector('.success-wrap h3'),
+        phone.querySelector('.success-case-id'),
+        phone.querySelector('.success-wrap p'),
+        phone.querySelector('.btn')
+      ].filter(Boolean);
+      if (!parts.length) return;
+      phone.classList.add('success-demo-phone');
+      parts.forEach(part => part.classList.add('success-pending'));
+      parts.forEach((part, index) => {
+        schedulePhoneAnimation(phone, 320 + index * 260, () => {
+          part.classList.remove('success-pending');
+          part.classList.add('success-shown');
+        });
+      });
     }
 
     function startPrototypeStatusAnimation(phone) {
@@ -2781,8 +3118,10 @@
         if (phone.classList.contains('reveal-item') && !phone.classList.contains('reveal-visible')) return;
         if (index > 0 && !phone.classList.contains('reveal-visible')) return;
         if (index === 0) startPrototypeChatAnimation(phone);
-        if (index === 1) startPrototypeStatusAnimation(phone);
-        if (index === 2) startPrototypeClosureAnimation(phone);
+        if (index === 1) startPrototypeReviewAnimation(phone);
+        if (index === 2) startPrototypeSuccessAnimation(phone);
+        if (index === 3) startPrototypeStatusAnimation(phone);
+        if (index === 4) startPrototypeClosureAnimation(phone);
       });
     }
 
@@ -2827,7 +3166,13 @@
           '.callout'
         ],
         ['.analogy > .panel:first-child', '.equals, .analogy > .panel:last-child'],
-        ['.phones .phone:nth-child(1)', '.phones .phone:nth-child(2)', '.phones .phone:nth-child(3)'],
+        [
+          '.phones .phone:nth-child(1)',
+          '.phones .phone:nth-child(2)',
+          '.phones .phone:nth-child(3)',
+          '.phones .phone:nth-child(4)',
+          '.phones .phone:nth-child(5)'
+        ],
         ['.journeys .jrow:first-child', '.journeys .jrow.good', '.journeys .delta'],
         [
           '.pilot > .pilotbox',
@@ -2919,6 +3264,7 @@
       }
 
       function prepareSlideReveals(showAll = false) {
+        enhancePrototypeRoute();
         const plan = revealPlans[idx] || [];
         revealGroups = plan.map(selector => [...el.querySelectorAll(selector)]).filter(group => group.length);
         revealStep = 0;
